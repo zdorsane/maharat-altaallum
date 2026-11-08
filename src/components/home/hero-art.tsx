@@ -15,12 +15,12 @@ export function HeroArt({ t }: { t: Dict["home"]["preview"] }) {
     <figure className="animate-fade-up relative mx-auto aspect-[10/9] w-full max-w-[36rem] [animation-delay:150ms]" aria-label={t.label}>
       {/* flowing backdrop */}
       <div aria-hidden className="absolute inset-[4%] rounded-[45%_55%_48%_52%/52%_45%_55%_48%] bg-[radial-gradient(circle_at_35%_30%,#EDE6FF,#D9CCFF_55%,#C7E4FB)] opacity-90 dark:opacity-25" />
-      <HorizonArc className="absolute start-[6%] top-[3%] w-[46%] rtl:-scale-x-100" />
-      <Cloud className="animate-float absolute start-[-2%] bottom-[14%] w-[22%] text-white/90 [animation-delay:-3s] dark:text-white/20" />
-      <Cloud className="animate-float absolute end-[2%] top-[4%] w-[18%] text-white/90 [animation-delay:-5s] dark:text-white/20" />
+      <HorizonArc className="parallax absolute start-[6%] top-[3%] w-[46%] rtl:-scale-x-100" style={{ "--depth": 8 } as React.CSSProperties} />
+      <Cloud style={{ "--depth": 14 } as React.CSSProperties} className="parallax animate-float absolute start-[-2%] bottom-[14%] w-[22%] text-white/90 [animation-delay:-3s] dark:text-white/20" />
+      <Cloud style={{ "--depth": 18 } as React.CSSProperties} className="parallax animate-float absolute end-[2%] top-[4%] w-[18%] text-white/90 [animation-delay:-5s] dark:text-white/20" />
 
       {/* brand illustration */}
-      <div className="absolute start-[4%] top-[8%] w-[56%]">
+      <div className="parallax absolute start-[4%] top-[8%] w-[56%]" style={{ "--depth": -10 } as React.CSSProperties}>
         <Image
           src="/brand/afaq-hero-child.webp"
           alt=""
@@ -33,7 +33,7 @@ export function HeroArt({ t }: { t: Dict["home"]["preview"] }) {
       </div>
 
       {/* laptop previewing the platform */}
-      <div aria-hidden className="animate-float absolute end-[0%] bottom-[6%] w-[60%] [animation-delay:-2s] [animation-duration:9s]">
+      <div aria-hidden style={{ "--depth": 14 } as React.CSSProperties} className="parallax animate-float absolute end-[0%] bottom-[6%] w-[60%] [animation-delay:-2s] [animation-duration:9s]">
         <div className="rounded-[14px] bg-[#2b2253] p-[5px] shadow-[0_30px_60px_-24px_rgb(41_32_77/0.6)]">
           <div className="overflow-hidden rounded-[10px] bg-white text-[#29204D]">
             <div className="flex items-center justify-between gap-2 border-b border-[#efe9ff] px-2.5 py-1.5">
@@ -77,18 +77,18 @@ export function HeroArt({ t }: { t: Dict["home"]["preview"] }) {
       </div>
 
       {/* floating brand elements */}
-      <GoldStar className="animate-float absolute end-[24%] top-[2%] w-[11%] [animation-duration:6s]" />
-      <Sparkle className="animate-twinkle absolute end-[12%] top-[22%] w-[4%]" color="#60B5F5" />
-      <Sparkle className="animate-twinkle absolute start-[50%] top-[12%] w-[3%] [animation-delay:-1.2s]" color="#A78BFA" />
-      <span aria-hidden className="animate-float absolute end-[36%] top-[16%] text-[clamp(1.5rem,4vw,2.6rem)] font-extrabold text-[#4B2CBF] [animation-delay:-1s] dark:text-[#C9B8FF]">
+      <GoldStar className="parallax animate-float absolute end-[24%] top-[2%] w-[11%] [animation-duration:6s]" style={{ "--depth": 40 } as React.CSSProperties} />
+      <Sparkle className="parallax animate-twinkle absolute end-[12%] top-[22%] w-[4%]" color="#60B5F5" style={{ "--depth": 30 } as React.CSSProperties} />
+      <Sparkle className="parallax animate-twinkle absolute start-[50%] top-[12%] w-[3%] [animation-delay:-1.2s]" color="#A78BFA" style={{ "--depth": 24 } as React.CSSProperties} />
+      <span aria-hidden style={{ "--depth": 32 } as React.CSSProperties} className="parallax animate-float absolute end-[36%] top-[16%] text-[clamp(1.5rem,4vw,2.6rem)] font-extrabold text-[#4B2CBF] [animation-delay:-1s] dark:text-[#C9B8FF]">
         A
       </span>
-      <span aria-hidden className="animate-float absolute end-[8%] top-[38%] font-[family-name:var(--font-alexandria)] text-[clamp(1.4rem,3.6vw,2.3rem)] font-bold text-[#7C5CE6] [animation-delay:-4s] dark:text-[#C9B8FF]">
+      <span aria-hidden style={{ "--depth": 26 } as React.CSSProperties} className="parallax animate-float absolute end-[8%] top-[38%] font-[family-name:var(--font-alexandria)] text-[clamp(1.4rem,3.6vw,2.3rem)] font-bold text-[#7C5CE6] [animation-delay:-4s] dark:text-[#C9B8FF]">
         ب
       </span>
-      <Pencil className="animate-float absolute end-[20%] top-[24%] w-[5%] rotate-[28deg] [animation-delay:-2.5s]" />
+      <Pencil className="parallax animate-float absolute end-[20%] top-[24%] w-[5%] rotate-[28deg] [animation-delay:-2.5s]" style={{ "--depth": 36 } as React.CSSProperties} />
 
-      <div aria-hidden className="animate-pop absolute start-[2%] top-[56%] flex items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-3 py-2 shadow-[var(--shadow-float)] backdrop-blur dark:border-white/10 dark:bg-[#1b1636]/90">
+      <div aria-hidden style={{ "--depth": 22 } as React.CSSProperties} className="parallax animate-pop absolute start-[2%] top-[56%] flex items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-3 py-2 shadow-[var(--shadow-float)] backdrop-blur dark:border-white/10 dark:bg-[#1b1636]/90">
         <GoldStar className="w-5" />
         <span className="text-sm font-extrabold text-[#4B2CBF] dark:text-[#C9B8FF]">{t.cheer}</span>
       </div>

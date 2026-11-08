@@ -28,6 +28,8 @@ import { HeroArt } from "@/components/home/hero-art";
 import { ReadingArt, SoundsArt, SpellingArt, WritingArt } from "@/components/home/area-art";
 import { GoldStar, Sparkle } from "@/components/brand/decor";
 import { Disclaimer } from "@/components/ui";
+import { CountUp, Parallax } from "@/components/motion";
+import { Words, wordCount } from "@/components/words";
 
 const AREAS = [
   { Art: ReadingArt, Icon: BookOpen, panel: "bg-primary-soft", chip: "bg-primary text-on-primary" },
@@ -71,8 +73,9 @@ export default async function HomePage() {
                 </span>
               ))}
             </p>
-            <h1 className="text-display animate-fade-up mt-5 text-ink [animation-delay:80ms]">
-              {h.titleStart} <span className="marker text-primary">{h.titleHighlight}</span> {h.titleEnd}
+            <h1 className="text-display mt-5 text-ink">
+              <Words text={h.titleStart} /> <span className="marker text-primary"><Words text={h.titleHighlight} start={wordCount(h.titleStart)} /></span>{" "}
+              <Words text={h.titleEnd} start={wordCount(h.titleStart) + wordCount(h.titleHighlight)} />
             </h1>
             <p className="text-lead animate-fade-up mt-6 max-w-xl text-muted [animation-delay:160ms]">{h.subtitle}</p>
             <div className="animate-fade-up mt-9 flex flex-wrap gap-3 [animation-delay:240ms]">
@@ -95,7 +98,9 @@ export default async function HomePage() {
               ))}
             </ul>
           </div>
-          <HeroArt t={h.preview} />
+          <Parallax>
+            <HeroArt t={h.preview} />
+          </Parallax>
         </div>
       </section>
 
@@ -106,7 +111,7 @@ export default async function HomePage() {
           {h.areas.map((a, i) => {
             const { Art, Icon, panel, chip } = AREAS[i];
             return (
-              <article key={a.title} className="reveal card card-hover group flex flex-col overflow-hidden rounded-[1.75rem] p-0" style={delay(i)}>
+              <article key={a.title} className="reveal card card-hover spotlight group flex flex-col overflow-hidden rounded-[1.75rem] p-0" style={delay(i)}>
                 <div className={cn("px-4 pt-5", panel)}>
                   <Art />
                 </div>
@@ -153,12 +158,12 @@ export default async function HomePage() {
                   {!last && (
                     <span
                       aria-hidden
-                      className="absolute start-7 top-16 -bottom-10 w-0.5 bg-[repeating-linear-gradient(to_bottom,var(--blush)_0_6px,transparent_6px_12px)] lg:start-[4.5rem] lg:end-0 lg:top-7 lg:bottom-auto lg:h-0.5 lg:w-auto lg:bg-[repeating-linear-gradient(to_right,var(--blush)_0_6px,transparent_6px_12px)]"
+                      className="line-draw absolute start-7 top-16 -bottom-10 w-0.5 bg-[repeating-linear-gradient(to_bottom,var(--blush)_0_6px,transparent_6px_12px)] lg:start-[4.5rem] lg:end-0 lg:top-7 lg:bottom-auto lg:h-0.5 lg:w-auto lg:bg-[repeating-linear-gradient(to_right,var(--blush)_0_6px,transparent_6px_12px)]"
                     />
                   )}
                   <span
                     className={cn(
-                      "relative z-10 grid size-14 shrink-0 place-items-center rounded-2xl text-lg font-extrabold shadow-[var(--shadow-card)]",
+                      "pop-on-reveal relative z-10 grid size-14 shrink-0 place-items-center rounded-2xl text-lg font-extrabold shadow-[var(--shadow-card)]",
                       last ? "bg-sun text-[#29204D]" : "bg-primary text-on-primary",
                     )}
                   >
@@ -187,7 +192,7 @@ export default async function HomePage() {
                 key={p.title}
                 style={delay(i)}
                 className={cn(
-                  "reveal card card-hover relative flex flex-col overflow-hidden rounded-[1.75rem] p-6",
+                  "reveal card card-hover spotlight relative flex flex-col overflow-hidden rounded-[1.75rem] p-6",
                   i < 3 ? "lg:col-span-2" : "lg:col-span-3",
                   soon && "border-dashed bg-surface-2/60 shadow-none",
                 )}
@@ -210,7 +215,7 @@ export default async function HomePage() {
 
       {/* ── Specialists ──────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-12">
-        <div className="reveal grid gap-10 rounded-[2rem] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div data-reveal="scale" className="reveal grid gap-10 rounded-[2rem] border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <SectionHeading eyebrow={h.specEyebrow} title={h.specTitle} subtitle={h.specSubtitle} className="mb-8" />
             <Link href="/specialists" className="btn-primary group">
@@ -232,7 +237,7 @@ export default async function HomePage() {
               ))}
             </ul>
           ) : (
-            <ul className="grid gap-4 sm:grid-cols-2">
+            <ul className="reveal-stagger grid gap-4 sm:grid-cols-2">
               {h.specFeatures.map((f, i) => {
                 const Icon = SPEC_ICONS[i];
                 return (
@@ -255,7 +260,7 @@ export default async function HomePage() {
         <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <SectionHeading eyebrow={h.parentEyebrow} title={h.parentTitle} subtitle={h.parentSubtitle} className="mb-8" />
-            <ul className="reveal space-y-3">
+            <ul className="reveal-stagger space-y-3">
               {h.parentPoints.map((p) => (
                 <li key={p} className="flex items-center gap-3 font-semibold">
                   <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-on-primary">
@@ -282,8 +287,8 @@ export default async function HomePage() {
             {h.why.map((w, i) => {
               const { Icon, tone } = WHY[i];
               return (
-                <article key={w.title} className="reveal card card-hover rounded-[1.75rem] p-6 text-center" style={delay(i)}>
-                  <span className={cn("mx-auto grid size-14 place-items-center rounded-2xl", tone)}>
+                <article key={w.title} className="reveal card card-hover spotlight overflow-hidden rounded-[1.75rem] p-6 text-center" style={delay(i)}>
+                  <span className={cn("pop-on-reveal mx-auto grid size-14 place-items-center rounded-2xl", tone)}>
                     <Icon className="size-7" />
                   </span>
                   <h3 className="mt-5 text-lg font-extrabold">{w.title}</h3>
@@ -298,7 +303,7 @@ export default async function HomePage() {
 
       {/* ── Final CTA ────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <div className="reveal relative overflow-hidden rounded-[2.25rem] bg-[linear-gradient(135deg,#4B2CBF_0%,#3A2399_55%,#29204D_100%)] px-6 py-16 text-center text-white sm:px-12">
+        <div data-reveal="scale" className="reveal relative overflow-hidden rounded-[2.25rem] bg-[linear-gradient(135deg,#4B2CBF_0%,#3A2399_55%,#29204D_100%)] px-6 py-16 text-center text-white sm:px-12">
           <svg aria-hidden viewBox="0 0 800 200" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-32 w-full opacity-40">
             <path d="M0 160C180 90 360 80 520 120S760 170 800 140V200H0Z" fill="#A78BFA" />
             <path d="M0 190C220 130 420 140 600 170S760 190 800 180V200H0Z" fill="#60B5F5" opacity=".6" />
@@ -327,7 +332,7 @@ export default async function HomePage() {
 function ParentPreview({ h }: { h: Dict["home"] }) {
   const p = h.parentPreview;
   return (
-    <div className="reveal relative">
+    <div data-reveal="end" className="reveal relative">
       <div aria-hidden className="absolute -inset-5 -z-10 rounded-[2.5rem] bg-[linear-gradient(135deg,#EDE6FF,#E3F2FE)] dark:opacity-20" />
       <GoldStar className="animate-float absolute -end-3 -top-4 w-10" />
       <div className="card rounded-[1.75rem] p-6 shadow-[var(--shadow-float)]">
@@ -345,7 +350,7 @@ function ParentPreview({ h }: { h: Dict["home"] }) {
         <div className="mt-6 rounded-2xl bg-surface-2 p-4">
           <div className="mb-2 flex justify-between text-sm font-bold">
             <span>{p.progress}</span>
-            <span className="text-primary">72%</span>
+            <span className="text-primary"><CountUp value={72} suffix="%" /></span>
           </div>
           <div className="h-3 overflow-hidden rounded-full bg-surface">
             <div className="animate-grow h-full w-[72%] rounded-full bg-[linear-gradient(90deg,#4B2CBF,#A78BFA)]" />

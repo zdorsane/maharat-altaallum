@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/toaster";
-import { RevealObserver } from "@/components/motion";
+import { RevealObserver, ScrollState, SpotlightTracker } from "@/components/motion";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import { getI18n } from "@/lib/i18n/server";
 import "./fonts.css";
@@ -36,6 +36,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {children}
         <Toaster />
         <RevealObserver locale={locale} />
+        <ScrollState />
+        <SpotlightTracker />
       </body>
     </html>
   );

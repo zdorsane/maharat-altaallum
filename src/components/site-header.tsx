@@ -25,13 +25,13 @@ export async function SiteHeader() {
         {t.nav.skip}
       </a>
       <header className="sticky top-0 z-40 px-3 pt-3">
-        <div className="glass mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border py-2 ps-3 pe-2 shadow-[var(--shadow-card)] sm:ps-4">
+        <div className="site-nav glass mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full border py-2 ps-3 pe-2 shadow-[var(--shadow-card)] sm:ps-4">
           <Link href="/" aria-label={t.meta.title} className="shrink-0">
             <Logo locale={locale} />
           </Link>
           <nav aria-label={t.common.menu} className="hidden items-center gap-0.5 lg:flex">
             {links.map((l) => (
-              <Link key={l.href} href={l.href} className="rounded-full px-3.5 py-2 text-sm font-semibold text-muted transition hover:bg-surface-2 hover:text-primary">
+              <Link key={l.href} href={l.href} className="nav-link rounded-full px-3.5 py-2 text-sm font-semibold text-muted transition hover:text-primary">
                 {l.label}
               </Link>
             ))}

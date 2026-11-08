@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getI18n } from "@/lib/i18n/server";
+import { CountUp } from "./motion";
 
 const TONES = {
   info: "bg-primary-soft text-primary",
@@ -57,13 +58,13 @@ export function StatCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="card card-hover relative overflow-hidden">
+    <div className="card card-hover spotlight relative overflow-hidden">
       <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1", STAT_TONES[tone].bar)} />
       <div className="relative flex items-start justify-between gap-3">
         <p className="text-sm font-medium text-muted">{label}</p>
         {icon && <span className={cn("grid size-9 place-items-center rounded-xl", STAT_TONES[tone].chip)}>{icon}</span>}
       </div>
-      <p className="relative mt-2 text-4xl font-extrabold text-ink tabular-nums">{value}</p>
+      <p className="relative mt-2 text-4xl font-extrabold text-ink tabular-nums">{typeof value === "number" ? <CountUp value={value} /> : value}</p>
       {hint && <p className="relative mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );
