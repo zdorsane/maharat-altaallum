@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { ROLE_HOME } from "@/lib/constants";
 import { fmt } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
-import { Logo } from "./logo";
+import { Logo, LogoStacked } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MobileMenu } from "./mobile-menu";
@@ -83,9 +83,9 @@ export async function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1.3fr_0.8fr]">
-        <div>
-          <Logo locale={locale} />
-          <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">{t.footer.tagline}</p>
+        <div className="flex flex-col items-start">
+          <LogoStacked className="scale-90 origin-top-left rtl:origin-top-right" />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{t.footer.tagline}</p>
           <div className="mt-6 flex gap-2">
             <LocaleSwitcher locale={locale} label={t.common.language} placement="top" />
             <ThemeToggle label={t.common.themeToggle} />

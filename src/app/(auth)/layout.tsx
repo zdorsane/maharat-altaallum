@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { Logo } from "@/components/logo";
+import { Logo, LogoStacked } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { getI18n } from "@/lib/i18n/server";
@@ -12,20 +12,8 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <aside className="relative hidden overflow-hidden bg-[#245B73] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <span aria-hidden className="absolute -end-20 -top-20 size-72 rounded-full bg-[#F3C969]" />
         <span aria-hidden className="absolute -start-16 bottom-24 size-64 rounded-full border-[32px] border-[#67B7A5]/45" />
-        <div aria-hidden dir="rtl" className="pointer-events-none absolute end-12 top-[38%] flex gap-3 select-none">
-          {[
-            { ch: "أ", bg: "bg-[#F3C969]", d: "0s", r: "-rotate-6" },
-            { ch: "ب", bg: "bg-[#F2A69B]", d: "-2s", r: "rotate-3" },
-            { ch: "ت", bg: "bg-[#F7F5EF]", d: "-4s", r: "-rotate-3" },
-          ].map((l) => (
-            <span key={l.ch} className="animate-float inline-block" style={{ animationDelay: l.d }}>
-              <span className={`grid size-16 place-items-center rounded-2xl text-3xl font-extrabold text-[#283C48] shadow-lg ${l.bg} ${l.r}`}>{l.ch}</span>
-            </span>
-          ))}
-        </div>
-
-        <Link href="/" className="relative">
-          <Logo locale={locale} tone="light" />
+        <Link href="/" className="relative self-start" aria-label={t.meta.title}>
+          <LogoStacked tone="light" />
         </Link>
         <div className="relative max-w-md">
           <h2 className="text-4xl font-extrabold">{t.auth.sideTitle}</h2>

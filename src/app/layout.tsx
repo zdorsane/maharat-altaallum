@@ -11,7 +11,12 @@ const plexArabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
-  return { title: { default: t.meta.title, template: `%s · ${t.meta.title}` }, description: t.meta.description };
+  return {
+    metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+    title: { default: t.meta.title, template: `%s · ${t.meta.title}` },
+    description: t.meta.description,
+    openGraph: { title: t.meta.title, description: t.meta.description, images: [{ url: "/brand/maharat-logo.png", width: 1536, height: 1024, alt: "Maharat Al Taallum — مهارات التعلم" }] },
+  };
 }
 
 export const viewport: Viewport = {
