@@ -20,7 +20,7 @@ export async function AppShell({ user, area, children }: { user: CurrentUser; ar
     <Link href="/notifications" className="icon-btn relative" aria-label={t.common.notifications} title={t.common.notifications}>
       <Bell className="size-[18px]" />
       {unread > 0 && (
-        <span className="absolute -end-1 -top-1 grid min-w-5 place-items-center rounded-full bg-coral px-1 text-[10px] leading-5 font-bold text-white ring-2 ring-surface">
+        <span className="absolute -end-1 -top-1 grid min-w-5 place-items-center rounded-full bg-coral px-1 text-[10px] leading-5 font-bold text-surface ring-2 ring-surface">
           {unread > 99 ? "99+" : unread}
         </span>
       )}
@@ -39,7 +39,7 @@ export async function AppShell({ user, area, children }: { user: CurrentUser; ar
         </div>
         <div className="m-3 rounded-2xl border border-line bg-surface p-3">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-linear-to-br from-primary to-teal text-sm font-bold text-white">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-sm font-bold text-on-primary">
               {initials(user.fullName)}
             </span>
             <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export async function AppShell({ user, area, children }: { user: CurrentUser; ar
             <NavLinks items={nav} variant="bar" />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
+        <main id="main" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>

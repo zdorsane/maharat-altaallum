@@ -36,11 +36,11 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 }
 
 const STAT_TONES = {
-  primary: "from-primary/15 text-primary",
-  mint: "from-mint/15 text-mint",
-  sun: "from-sun/20 text-sun-ink",
-  coral: "from-coral/15 text-coral",
-  violet: "from-violet/15 text-violet",
+  primary: { chip: "bg-primary-soft text-primary", bar: "bg-primary" },
+  mint: { chip: "bg-mint-soft text-mint", bar: "bg-teal" },
+  sun: { chip: "bg-sun-soft text-sun-ink", bar: "bg-sun" },
+  coral: { chip: "bg-blush-soft text-coral", bar: "bg-blush" },
+  violet: { chip: "bg-violet-soft text-violet", bar: "bg-violet" },
 };
 
 export function StatCard({
@@ -58,12 +58,12 @@ export function StatCard({
 }) {
   return (
     <div className="card card-hover relative overflow-hidden">
-      <div className={cn("pointer-events-none absolute -end-10 -top-10 size-32 rounded-full bg-radial to-transparent blur-xl", STAT_TONES[tone])} />
+      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1", STAT_TONES[tone].bar)} />
       <div className="relative flex items-start justify-between gap-3">
         <p className="text-sm font-medium text-muted">{label}</p>
-        {icon && <span className={cn("grid size-9 place-items-center rounded-xl bg-surface-2", STAT_TONES[tone])}>{icon}</span>}
+        {icon && <span className={cn("grid size-9 place-items-center rounded-xl", STAT_TONES[tone].chip)}>{icon}</span>}
       </div>
-      <p className="relative mt-2 font-[family-name:var(--font-display)] text-4xl font-bold tabular-nums">{value}</p>
+      <p className="relative mt-2 text-4xl font-extrabold text-ink tabular-nums">{value}</p>
       {hint && <p className="relative mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );

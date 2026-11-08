@@ -4,6 +4,12 @@ Plateforme algérienne d'accompagnement des enfants en difficulté de lecture, d
 
 > La plateforme ne pose aucun diagnostic médical ou psychologique. L'examen initial est une orientation pédagogique ; l'évaluation est réalisée par des spécialistes qualifiés.
 
+## Identité visuelle
+
+- Palette : Deep Teal `#245B73`, Soft Mint `#67B7A5`, Warm Yellow `#F3C969`, Soft Coral `#F2A69B`, Warm Ivory `#F7F5EF`, Ink Slate `#283C48` — définie comme tokens dans `src/app/globals.css` (clair et sombre).
+- Typographie : Manrope (latin) et IBM Plex Sans Arabic (arabe), chargées via `next/font`.
+- Logo : `src/components/logo.tsx` (complet et symbole), favicon `src/app/icon.svg`.
+
 ## Fonctionnalités
 
 - **Quatre espaces par rôle** : parent, référent pédagogique, spécialiste, administration, avec contrôle d'accès côté serveur.
@@ -18,7 +24,13 @@ Next.js 15 (App Router, Server Actions) · React 19 · TypeScript · Prisma 6 ·
 
 ## Démarrage
 
-Prérequis : Node.js 20+ et une base PostgreSQL (Neon, ou locale).
+Prérequis : Node.js 20+ et une base PostgreSQL. En local, le plus simple est le serveur intégré de Prisma :
+
+```bash
+npx prisma dev -d --name maharat   # affiche une URL postgres://… à copier dans .env
+```
+
+Avec ce serveur local, ajouter `&connection_limit=1&pgbouncer=true` à l'URL (il ne gère pas les requêtes préparées).
 
 ```bash
 npm install

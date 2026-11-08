@@ -1,6 +1,8 @@
+import { siteEn } from "./site-en";
 import type { Dict } from "./ar";
 
 export const en: Dict = {
+  ...siteEn,
   meta: {
     title: "Maharat Al Taallum",
     description:
@@ -27,74 +29,6 @@ export const en: Dict = {
       "The platform does not provide medical or psychological diagnoses. The initial review is educational guidance only; assessments are carried out by qualified specialists.",
     ageFew: "{n} years old",
     ageMany: "{n} years old",
-  },
-  nav: {
-    how: "How it works",
-    areas: "Areas",
-    specialists: "Specialists",
-    learn: "Articles for parents",
-    contact: "Contact",
-    privacy: "Privacy policy",
-  },
-  home: {
-    badge: "An Algerian educational support platform",
-    titleStart: "Helping every child",
-    titleHighlight: "read and write",
-    titleEnd: "with confidence",
-    subtitle:
-      "We help parents understand their child's difficulties with reading, writing and spelling, and guide them to qualified speech therapists and special-education professionals — with interactive exercises and clear progress tracking.",
-    ctaPrimary: "Submit my child's file",
-    ctaSecondary: "How does it work?",
-    pills: ["Specialists with verified credentials", "Fun interactive exercises", "Protected, confidential data", "In Arabic, French and English"],
-    preview: {
-      exercise: "Exercise: where is the letter “ب”?",
-      progress: "Reading progress",
-      appointment: "Assessment appointment confirmed",
-      appointmentSub: "Sunday · 10:00",
-      example: "Illustrative example",
-    },
-    areasEyebrow: "Areas",
-    areasTitle: "We support children where they stumble",
-    areasSubtitle: "Four foundational skills that school learning is built on — each with its own exercises and specialists.",
-    areas: [
-      { title: "Reading", body: "Decoding, fluency and comprehension — step by step, without pressure." },
-      { title: "Writing", body: "Pencil grip, letter formation and organising writing on the line." },
-      { title: "Spelling", body: "Linking sounds to letters and anchoring rules through playful repetition." },
-      { title: "Letters & sounds", body: "Telling similar sounds apart by ear and recognising letters." },
-    ],
-    howEyebrow: "The journey",
-    howTitle: "From a first observation to regular follow-up",
-    howSubtitle: "A clear path, with every step visible in your space.",
-    steps: [
-      { title: "You submit the file", body: "Describe what you notice in reading, writing or spelling, along with any school documents or previous assessments." },
-      { title: "Initial educational review", body: "Our team reviews the file and gives first guidance: home activities, or a recommendation for a specialist assessment." },
-      { title: "Referral to a specialist", body: "We suggest a speech therapist or education specialist near you and arrange the assessment appointment." },
-      { title: "Plan and follow-up", body: "The specialist builds a support plan and follows the child with interactive exercises and progress you can see." },
-    ],
-    audienceEyebrow: "Who it's for",
-    audienceTitle: "One shared space for the family and the specialist",
-    audience: [
-      { title: "Parents", body: "Submit your child's file, follow its status and appointments, and talk to the team easily.", cta: "Create a free account" },
-      { title: "Specialists", body: "Receive well-prepared, structured files, build support plans and track progress clearly.", cta: "Join the network" },
-      { title: "Schools & teachers", body: "Point parents toward early support when you notice a pupil struggling.", cta: "Propose a partnership" },
-    ],
-    trustEyebrow: "Our commitment",
-    trustTitle: "Responsible educational support",
-    trustBody: "The child's interest comes first: no remote diagnoses, and no data shared outside the support team.",
-    trust: [
-      { title: "Not a medical service", body: "The initial review is educational guidance; assessments are done by a qualified specialist." },
-      { title: "Verified specialists", body: "We check every specialist's credentials before they appear on the platform." },
-      { title: "Protected privacy", body: "Only authorised people can see a child's data, and every sensitive access is logged." },
-    ],
-    ctaTitle: "Noticed your child struggling?",
-    ctaBody: "The earlier support starts, the easier it is. Submit a file in minutes.",
-    ctaButton: "Create an account",
-  },
-  footer: {
-    tagline: "Educational support for children who struggle with reading, writing and spelling.",
-    rights: "© {year} Maharat Al Taallum — educational support, not a medical service.",
-    platform: "Platform",
-    legal: "Information",
   },
   auth: {
     sideTitle: "Understanding together, supporting together.",

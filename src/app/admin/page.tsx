@@ -44,7 +44,7 @@ export default async function AdminHome() {
                 <span className="truncate text-muted">{t.labels.status[s]}</span>
                 <span className="h-2.5 overflow-hidden rounded-full bg-surface-2">
                   <span
-                    className="animate-grow block h-full rounded-full bg-linear-to-r from-primary to-teal"
+                    className="animate-grow block h-full rounded-full bg-teal"
                     style={{ width: `${(n / max) * 100}%`, animationDelay: `${i * 60}ms` }}
                   />
                 </span>

@@ -1,9 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { IBM_Plex_Sans_Arabic, Manrope } from "next/font/google";
 import { Toaster } from "@/components/toaster";
 import { RevealObserver } from "@/components/motion";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import { getI18n } from "@/lib/i18n/server";
 import "./globals.css";
+
+const manrope = Manrope({ subsets: ["latin", "latin-ext"], variable: "--font-manrope", display: "swap" });
+const plexArabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-plex-arabic", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -12,8 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f7fb" },
-    { media: "(prefers-color-scheme: dark)", color: "#080d19" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f5ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e1a20" },
   ],
 };
 
@@ -24,14 +28,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400..700&display=swap"
-        />
       </head>
-      <body className="min-h-dvh">
+      <body className={`${manrope.variable} ${plexArabic.variable} min-h-dvh`}>
         {children}
         <Toaster />
         <RevealObserver locale={locale} />

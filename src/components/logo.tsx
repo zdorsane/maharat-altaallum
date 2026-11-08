@@ -1,39 +1,43 @@
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 
-/** Brand mark: an open book on a cobalt→teal tile, with a saffron spark. */
-export function LogoMark({ className }: { className?: string }) {
+type Tone = "default" | "light";
+
+/**
+ * Brand symbol: an open book on a deep-teal tile with a warm-yellow spark.
+ * `light` inverts the tile for use on teal backgrounds. Same geometry as src/app/icon.svg.
+ */
+export function LogoMark({ className, tone = "default" }: { className?: string; tone?: Tone }) {
+  const tile = tone === "light" ? "#F7F5EF" : "#245B73";
+  const page = tone === "light" ? "#245B73" : "#F7F5EF";
   return (
-    <span
-      aria-hidden
-      className={cn(
-        "relative inline-grid size-10 shrink-0 place-items-center rounded-[14px] bg-linear-to-br from-[#2448e0] via-[#2a5cf0] to-[#0fb3a0] shadow-[0_8px_18px_-8px_rgb(36_72_224/0.7)] ring-1 ring-white/20 ring-inset",
-        className,
-      )}
-    >
-      <svg viewBox="0 0 24 24" className="size-[62%]">
-        <path d="M3.4 6.3c3-1.3 5.8-1.1 8.2.8v11.7c-2.4-1.8-5.2-2-8.2-.8Z" fill="#fff" />
-        <path d="M20.6 6.3c-3-1.3-5.8-1.1-8.2.8v11.7c2.4-1.8 5.2-2 8.2-.8Z" fill="#fff" fillOpacity=".72" />
-      </svg>
-      <svg viewBox="0 0 10 10" className="animate-twinkle absolute -end-1 -top-1 size-3.5 drop-shadow-sm">
-        <path d="M5 0l1.2 3.8L10 5 6.2 6.2 5 10 3.8 6.2 0 5l3.8-1.2Z" fill="#f7b32b" />
-      </svg>
-    </span>
+    <svg viewBox="0 0 48 48" aria-hidden className={cn("size-10 shrink-0", className)}>
+      <rect width="48" height="48" rx="14" fill={tile} />
+      <path d="M9.5 15.6c4.7-2 9.2-1.7 13 1.2v17.6c-3.8-2.7-8.3-3-13-1.2Z" fill={page} />
+      <path d="M38.5 15.6c-4.7-2-9.2-1.7-13 1.2v17.6c3.8-2.7 8.3-3 13-1.2Z" fill={page} fillOpacity=".78" />
+      <path d="M13 21.5c2.6-.8 4.8-.6 6.6.5M13 25.8c2.6-.8 4.8-.6 6.6.5" stroke={tile} strokeOpacity=".35" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M38 5.5l1.5 4.4 4.5 1.6-4.5 1.6L38 17.5l-1.5-4.4-4.5-1.6 4.5-1.6Z" fill="#F3C969" className="animate-twinkle origin-center [transform-box:fill-box]" />
+    </svg>
   );
 }
 
-/** Bilingual lockup: the name in the page's script, with the other script as a quiet subtitle. */
-export function Logo({ locale, tone = "default", hideTextOnMobile = false }: { locale: Locale; tone?: "default" | "light"; hideTextOnMobile?: boolean }) {
+/** Full logo: symbol + name in the page's script, with the other script as a quiet subtitle. */
+export function Logo({ locale, tone = "default", hideTextOnMobile = false }: { locale: Locale; tone?: Tone; hideTextOnMobile?: boolean }) {
   const isAr = locale === "ar";
+  const light = tone === "light";
   return (
     <span className="inline-flex items-center gap-2.5">
-      <LogoMark />
+      <LogoMark tone={tone} />
       <span className={cn("flex-col leading-none", hideTextOnMobile ? "hidden sm:flex" : "flex")}>
-        <span className={cn("font-[family-name:var(--font-display)] text-lg font-bold tracking-tight", tone === "light" ? "text-white" : "text-ink")}>
+        <span className={cn("text-[1.15rem] font-extrabold tracking-tight", light ? "text-white" : "text-primary")}>
           {isAr ? "مهارات التعلم" : "Maharat"}
         </span>
         <span
-          className={cn("mt-1 text-[10px] font-medium whitespace-nowrap", isAr ? "tracking-[0.18em] uppercase" : "tracking-normal", tone === "light" ? "text-white/70" : "text-muted")}
+          className={cn(
+            "mt-1 text-[10px] font-semibold whitespace-nowrap",
+            isAr ? "tracking-[0.2em] uppercase" : "tracking-normal",
+            light ? "text-white/75" : "text-muted",
+          )}
         >
           {isAr ? "Maharat Al Taallum" : "مهارات التعلم"}
         </span>

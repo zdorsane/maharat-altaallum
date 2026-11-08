@@ -1,6 +1,8 @@
+import { siteFr } from "./site-fr";
 import type { Dict } from "./ar";
 
 export const fr: Dict = {
+  ...siteFr,
   meta: {
     title: "Maharat Al Taallum",
     description:
@@ -27,74 +29,6 @@ export const fr: Dict = {
       "La plateforme ne pose aucun diagnostic médical ou psychologique. L'examen initial est une orientation pédagogique ; l'évaluation est réalisée par des spécialistes qualifiés.",
     ageFew: "{n} ans",
     ageMany: "{n} ans",
-  },
-  nav: {
-    how: "Comment ça marche",
-    areas: "Domaines",
-    specialists: "Spécialistes",
-    learn: "Articles pour parents",
-    contact: "Contact",
-    privacy: "Confidentialité",
-  },
-  home: {
-    badge: "Plateforme algérienne d'accompagnement éducatif",
-    titleStart: "Aider chaque enfant à",
-    titleHighlight: "lire et écrire",
-    titleEnd: "avec confiance",
-    subtitle:
-      "Nous aidons les parents à comprendre les difficultés de leur enfant en lecture, écriture et orthographe, et les orientons vers des orthophonistes et éducateurs spécialisés qualifiés — avec des exercices interactifs et un suivi clair des progrès.",
-    ctaPrimary: "Déposer le dossier de mon enfant",
-    ctaSecondary: "Comment ça marche ?",
-    pills: ["Spécialistes aux diplômes vérifiés", "Exercices interactifs ludiques", "Données protégées et confidentielles", "En arabe, français et anglais"],
-    preview: {
-      exercise: "Exercice : où est la lettre « ب » ?",
-      progress: "Progrès en lecture",
-      appointment: "Rendez-vous de bilan confirmé",
-      appointmentSub: "Dimanche · 10:00",
-      example: "Exemple illustratif",
-    },
-    areasEyebrow: "Domaines",
-    areasTitle: "Nous accompagnons l'enfant là où il bute",
-    areasSubtitle: "Quatre compétences fondamentales sur lesquelles reposent les apprentissages, chacune avec ses exercices et ses spécialistes.",
-    areas: [
-      { title: "Lecture", body: "Décodage, fluidité et compréhension — pas à pas, sans pression." },
-      { title: "Écriture", body: "Tenue du crayon, formation des lettres et organisation sur la ligne." },
-      { title: "Orthographe", body: "Associer le son à la lettre et ancrer les règles par la répétition ludique." },
-      { title: "Lettres et sons", body: "Discrimination auditive des sons proches et reconnaissance des lettres." },
-    ],
-    howEyebrow: "Le parcours",
-    howTitle: "De la première observation à un suivi régulier",
-    howSubtitle: "Un parcours clair, dont chaque étape est visible dans votre espace.",
-    steps: [
-      { title: "Vous déposez le dossier", body: "Décrivez ce que vous observez en lecture, écriture ou orthographe, avec les documents scolaires ou bilans antérieurs." },
-      { title: "Examen pédagogique initial", body: "Notre équipe étudie le dossier et propose une première orientation : activités à la maison ou bilan spécialisé." },
-      { title: "Orientation vers un spécialiste", body: "Nous proposons un orthophoniste ou un spécialiste proche de chez vous et organisons le rendez-vous de bilan." },
-      { title: "Plan et suivi", body: "Le spécialiste établit un plan de soutien et suit l'enfant avec des exercices interactifs et des progrès visibles dans votre espace." },
-    ],
-    audienceEyebrow: "Pour qui",
-    audienceTitle: "Un espace commun pour la famille et le spécialiste",
-    audience: [
-      { title: "Parents", body: "Déposez le dossier de votre enfant, suivez son état et ses rendez-vous, échangez facilement avec l'équipe.", cta: "Créer un compte gratuit" },
-      { title: "Spécialistes", body: "Recevez des dossiers orientés et structurés, établissez des plans de soutien et suivez les progrès clairement.", cta: "Rejoindre le réseau" },
-      { title: "Écoles et enseignants", body: "Orientez les parents vers un accompagnement précoce lorsque vous repérez des difficultés chez un élève.", cta: "Proposer un partenariat" },
-    ],
-    trustEyebrow: "Notre engagement",
-    trustTitle: "Un accompagnement éducatif responsable",
-    trustBody: "L'intérêt de l'enfant d'abord : aucun diagnostic à distance, aucun partage de données hors de l'équipe d'accompagnement.",
-    trust: [
-      { title: "Pas un service médical", body: "L'examen initial est une orientation pédagogique ; l'évaluation est faite par un spécialiste qualifié." },
-      { title: "Spécialistes vérifiés", body: "Nous vérifions les diplômes de chaque spécialiste avant sa mise en ligne." },
-      { title: "Confidentialité protégée", body: "Seules les personnes habilitées accèdent aux données de l'enfant, et chaque accès sensible est journalisé." },
-    ],
-    ctaTitle: "Vous avez remarqué une difficulté chez votre enfant ?",
-    ctaBody: "Plus l'accompagnement commence tôt, plus il est simple. Déposez un dossier en quelques minutes.",
-    ctaButton: "Créer un compte",
-  },
-  footer: {
-    tagline: "Accompagnement éducatif des enfants en difficulté de lecture, d'écriture et d'orthographe.",
-    rights: "© {year} Maharat Al Taallum — accompagnement éducatif, pas un service médical.",
-    platform: "Plateforme",
-    legal: "Informations",
   },
   auth: {
     sideTitle: "Comprendre ensemble, accompagner ensemble.",

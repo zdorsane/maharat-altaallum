@@ -3,9 +3,24 @@
 /* Dark mode follows the data-theme attribute set on <html> by the inline theme script. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/*
+ * Maharat brand tokens. Raw palette values live in :root / [data-theme="dark"] below;
+ * components only use the semantic names exposed here.
+ *
+ *   primary  Deep Teal   #245B73  navigation, headings, primary CTA
+ *   teal     Soft Mint   #67B7A5  progress, positive and educational fills
+ *   sun      Warm Yellow #F3C969  playful highlights, learning activities
+ *   blush    Soft Coral  #F2A69B  secondary highlights
+ *   canvas   Warm Ivory  #F7F5EF  page background
+ *   ink      Ink Slate   #283C48  body text
+ *
+ * Fill colours (teal, sun, blush) are not text-safe on light backgrounds; the
+ * matching *-ink / mint / coral tokens are the AA-contrast text variants.
+ */
 @theme inline {
-  --font-sans: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Readex Pro", "IBM Plex Sans Arabic", ui-sans-serif, sans-serif;
+  --font-sans: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, sans-serif;
+  --font-arabic: var(--font-plex-arabic), var(--font-manrope), ui-sans-serif, sans-serif;
 
   --color-ink: var(--ink);
   --color-muted: var(--muted);
@@ -15,6 +30,7 @@
   --color-surface-2: var(--surface-2);
 
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-on-primary: var(--on-primary);
   --color-primary-soft: var(--primary-soft);
   --color-teal: var(--teal);
@@ -23,6 +39,8 @@
   --color-sun: var(--sun);
   --color-sun-soft: var(--sun-soft);
   --color-sun-ink: var(--sun-ink);
+  --color-blush: var(--blush);
+  --color-blush-soft: var(--blush-soft);
   --color-coral: var(--coral);
   --color-coral-soft: var(--coral-soft);
   --color-violet: var(--violet);
@@ -36,7 +54,6 @@
   --animate-fade-up: fade-up 0.8s var(--ease-soft) both;
   --animate-fade-in: fade-in 0.5s ease both;
   --animate-float: float 7s ease-in-out infinite;
-  --animate-blob: blob 20s ease-in-out infinite;
   --animate-pop-in: pop-in 0.2s var(--ease-soft) both;
   --animate-page: page 0.5s var(--ease-soft) both;
   --animate-draw: draw 1.2s 0.6s var(--ease-soft) both;
@@ -45,6 +62,8 @@
   --animate-toast: toast 0.45s var(--ease-soft) both;
   --animate-pop: pop 0.7s 1s var(--ease-soft) both;
   --animate-rise: rise 1s var(--ease-soft) both;
+  --animate-ring: ring 1.6s 0.8s var(--ease-soft) both;
+  --animate-wave: wave 1.4s ease-in-out infinite;
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(18px); }
@@ -56,12 +75,7 @@
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-  @keyframes blob {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(40px, -30px) scale(1.1); }
-    66% { transform: translate(-30px, 25px) scale(0.92); }
+    50% { transform: translateY(-10px); }
   }
   @keyframes pop-in {
     from { opacity: 0; transform: translateY(-6px) scale(0.97); }
@@ -81,9 +95,12 @@
   @keyframes rise {
     from { transform: scaleY(0); }
   }
+  @keyframes ring {
+    from { stroke-dashoffset: 100; }
+  }
   @keyframes twinkle {
     0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.3) rotate(25deg); }
+    50% { transform: scale(1.25) rotate(20deg); }
   }
   @keyframes toast {
     from { opacity: 0; transform: translateY(20px) scale(0.97); }
@@ -94,83 +111,113 @@
     40% { transform: scale(1.12); }
     100% { transform: scale(1); }
   }
+  @keyframes wave {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
 }
 
 /* ── Color tokens ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  --canvas: #f6f7fb;
+  --canvas: #f7f5ef;
   --surface: #ffffff;
-  --surface-2: #f0f2f8;
-  --line: #e2e6ef;
-  --ink: #0e1628;
-  --muted: #586379;
+  --surface-2: #f0ede4;
+  --line: #e4dfd3;
+  --ink: #283c48;
+  --muted: #5a6b75;
 
-  --primary: #2448e0;
+  --primary: #245b73;
+  --primary-strong: #1b4a5e;
   --on-primary: #ffffff;
-  --primary-soft: #e8edff;
-  --teal: #0d9b8a;
-  --mint: #0b9a76;
-  --mint-soft: #ddf5ed;
-  --sun: #e89a0c;
-  --sun-soft: #fff2d4;
-  --sun-ink: #855600;
-  --coral: #dc4d36;
-  --coral-soft: #fde8e4;
-  --violet: #6a4ddd;
-  --violet-soft: #eeeafd;
+  --primary-soft: #e2ecee;
+  --teal: #67b7a5;
+  --mint: #2b7766;
+  --mint-soft: #e3f2ee;
+  --sun: #f3c969;
+  --sun-soft: #fbf1d6;
+  --sun-ink: #7a5a12;
+  --blush: #f2a69b;
+  --blush-soft: #fceae6;
+  --coral: #b4483a;
+  --coral-soft: #fceae6;
+  --violet: #4f6390;
+  --violet-soft: #e9ecf4;
+  --marker: color-mix(in oklab, #f3c969 75%, transparent);
+
+  --shadow-card: 0 1px 2px rgb(40 60 72 / 0.05), 0 12px 32px -20px rgb(40 60 72 / 0.22);
+  --shadow-float: 0 24px 48px -24px rgb(36 91 115 / 0.35);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #080d19;
-  --surface: #0f1729;
-  --surface-2: #162035;
-  --line: #222d45;
-  --ink: #e7ecf5;
-  --muted: #95a1b7;
+  --canvas: #0e1a20;
+  --surface: #13242c;
+  --surface-2: #1a2f38;
+  --line: #26414c;
+  --ink: #ecf1ef;
+  --muted: #a2b4b9;
 
-  --primary: #7d97ff;
-  --on-primary: #0a1024;
-  --primary-soft: #18234a;
-  --teal: #3fd2bf;
-  --mint: #43d1a2;
-  --mint-soft: #0f3229;
-  --sun: #f7bb45;
-  --sun-soft: #33270b;
-  --sun-ink: #f7c76c;
-  --coral: #ff8470;
-  --coral-soft: #3b1913;
-  --violet: #a78dff;
-  --violet-soft: #241c45;
+  --primary: #7fc0d3;
+  --primary-strong: #9bd0df;
+  --on-primary: #0e1a20;
+  --primary-soft: #193744;
+  --teal: #67b7a5;
+  --mint: #7acbb8;
+  --mint-soft: #163a33;
+  --sun: #f3c969;
+  --sun-soft: #3a3115;
+  --sun-ink: #f3d48c;
+  --blush: #f2a69b;
+  --blush-soft: #3d2420;
+  --coral: #f2a69b;
+  --coral-soft: #3d2420;
+  --violet: #a9b6da;
+  --violet-soft: #232c45;
+  --marker: color-mix(in oklab, #f3c969 38%, transparent);
+
+  --shadow-card: none;
+  --shadow-float: 0 24px 48px -24px rgb(0 0 0 / 0.6);
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Arabic pages lead with IBM Plex Sans Arabic; Manrope still covers Latin glyphs. */
+[lang="ar"] body {
+  font-family: var(--font-plex-arabic), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.8;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-family: inherit;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
-[dir="rtl"] :is(h1, h2, h3, h4) {
+[lang="ar"] :is(h1, h2, h3, h4) {
+  font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 p {
@@ -178,22 +225,23 @@ p {
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--primary) 28%, transparent);
+  background: color-mix(in oklab, var(--sun) 60%, transparent);
+  color: var(--ink);
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in oklab, var(--primary) 60%, transparent);
-  outline-offset: 2px;
+  outline: 3px solid color-mix(in oklab, var(--primary) 70%, transparent);
+  outline-offset: 3px;
   border-radius: 0.6rem;
 }
 
 /* Scroll-reveal: only hidden when JS is running (the theme script adds .js). */
 .js .reveal {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(24px);
   transition:
-    opacity 0.9s var(--ease-soft),
-    transform 0.9s var(--ease-soft);
+    opacity 0.8s var(--ease-soft),
+    transform 0.8s var(--ease-soft);
   transition-delay: var(--d, 0ms);
 }
 .js .reveal.is-in {
@@ -223,53 +271,74 @@ p {
   }
 }
 
+/* ── Typography scale ─────────────────────────────────────── */
+@utility text-display {
+  font-size: clamp(2.35rem, 1.6rem + 2.6vw, 3.75rem);
+  line-height: 1.08;
+}
+@utility text-h2 {
+  font-size: clamp(1.9rem, 1.4rem + 1.8vw, 2.75rem);
+  line-height: 1.15;
+}
+@utility text-lead {
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.7;
+}
+
 /* ── Components ───────────────────────────────────────────── */
 @utility card {
-  @apply rounded-card border border-line bg-surface p-5 shadow-[0_1px_2px_rgb(14_22_40/0.04),0_12px_32px_-16px_rgb(14_22_40/0.12)] dark:shadow-none;
+  @apply rounded-card border border-line bg-surface p-5 shadow-[var(--shadow-card)];
 }
 @utility card-hover {
-  @apply transition duration-300 ease-out hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_40px_-20px_rgb(36_72_224/0.35)];
+  @apply transition duration-300 ease-out hover:-translate-y-1 hover:border-primary/30 hover:shadow-[var(--shadow-float)];
 }
 @utility btn {
-  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition duration-200 select-none active:scale-[0.97] disabled:pointer-events-none disabled:opacity-60;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold whitespace-nowrap transition duration-200 select-none active:scale-[0.97] disabled:pointer-events-none disabled:opacity-60;
 }
 @utility btn-primary {
-  @apply btn bg-primary text-on-primary shadow-[0_8px_20px_-8px] shadow-primary/60 hover:-translate-y-px hover:brightness-110;
+  @apply btn bg-primary text-on-primary hover:bg-primary-strong hover:shadow-[var(--shadow-float)];
+}
+@utility btn-sun {
+  @apply btn bg-sun text-[#283c48] hover:brightness-105 hover:shadow-[0_16px_32px_-16px_rgb(243_201_105/0.9)];
 }
 @utility btn-mint {
-  @apply btn bg-mint text-white hover:brightness-110 dark:text-[#04140f];
+  @apply btn bg-mint text-white hover:brightness-110 dark:text-[#0e1a20];
 }
 @utility btn-ghost {
   @apply btn border border-line bg-surface text-ink hover:border-primary/40 hover:bg-surface-2;
 }
 @utility btn-danger {
-  @apply btn bg-coral text-white hover:brightness-110;
+  @apply btn bg-coral text-surface hover:brightness-110;
 }
 @utility btn-lg {
-  @apply rounded-2xl px-6 py-3.5 text-base;
+  @apply px-7 py-3.5 text-base;
 }
 @utility icon-btn {
-  @apply inline-grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-line bg-surface text-ink transition duration-200 hover:border-primary/40 hover:bg-surface-2 active:scale-95;
+  @apply inline-grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink transition duration-200 hover:border-primary/40 hover:bg-surface-2 active:scale-95;
 }
 @utility field {
   @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink transition placeholder:text-muted/70 hover:border-muted/40 focus:border-primary focus:ring-4 focus:ring-primary/15 focus:outline-none aria-invalid:border-coral;
 }
 @utility label {
-  @apply mb-1.5 block text-sm font-medium text-ink;
+  @apply mb-1.5 block text-sm font-semibold text-ink;
 }
 @utility field-error {
-  @apply mt-1.5 text-xs font-medium text-coral;
+  @apply mt-1.5 text-xs font-semibold text-coral;
 }
 @utility glass {
-  @apply border-line/70 bg-surface/75 backdrop-blur-xl backdrop-saturate-150;
-}
-@utility text-gradient {
-  @apply bg-linear-to-br from-primary via-primary to-teal bg-clip-text text-transparent;
+  @apply border-line/80 bg-surface/80 backdrop-blur-xl backdrop-saturate-150;
 }
 @utility bg-dots {
-  background-image: radial-gradient(color-mix(in oklab, var(--muted) 35%, transparent) 1px, transparent 1px);
+  background-image: radial-gradient(color-mix(in oklab, var(--muted) 30%, transparent) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 @utility eyebrow {
-  @apply inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase;
+  @apply inline-flex items-center gap-2 text-xs font-bold tracking-[0.14em] text-primary uppercase;
+}
+@utility marker {
+  /* Hand-drawn yellow highlight behind a phrase. */
+  background-image: linear-gradient(transparent 62%, var(--marker) 62%, var(--marker) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-inline: 0.08em;
 }
