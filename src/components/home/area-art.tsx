@@ -50,7 +50,7 @@ export function WritingArt() {
         <g transform="rotate(-50 128 54)">
           <rect x="104" y="48" width="44" height="12" rx="3" fill="var(--sun)" />
           <rect x="146" y="48" width="8" height="12" rx="2" fill="var(--blush)" />
-          <path d="M104 48l-11 6 11 6Z" fill="#E9D9B4" />
+          <path d="M104 48l-11 6 11 6Z" fill="#F4D9A8" />
         </g>
       </g>
     </svg>
@@ -70,7 +70,7 @@ export function SpellingArt() {
       {tiles.map((t) => (
         <g key={t.ch} className={`transition-transform duration-500 ${fb} ${t.lift}`}>
           <rect x={t.x} y="44" width="38" height="42" rx="10" fill={t.ch === "ا" ? "var(--sun)" : "var(--surface)"} stroke="var(--primary)" strokeWidth="2.5" />
-          <text x={t.x + 19} y="66" textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="800" fill={t.ch === "ا" ? "#283C48" : "var(--ink)"}>
+          <text x={t.x + 19} y="66" textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="800" fill={t.ch === "ا" ? "#29204D" : "var(--ink)"}>
             {t.ch}
           </text>
         </g>

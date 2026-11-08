@@ -1,106 +1,96 @@
-import { Check, Star } from "lucide-react";
+import Image from "next/image";
+import { BarChart3, BookOpen, ClipboardCheck, UsersRound } from "lucide-react";
 import type { Dict } from "@/lib/i18n/server";
+import { Cloud, GoldStar, HorizonArc, Pencil, Sparkle } from "@/components/brand/decor";
+import { LogoMark } from "@/components/logo";
 
-const TILES = [
-  { ch: "أ", x: 96, y: 214, r: -8, fill: "var(--sun)", delay: "0s" },
-  { ch: "b", x: 184, y: 150, r: 6, fill: "var(--teal)", delay: "-1.5s" },
-  { ch: "ب", x: 280, y: 132, r: -4, fill: "var(--blush)", delay: "-3s" },
-  { ch: "a", x: 368, y: 196, r: 9, fill: "#F7F5EF", delay: "-4.5s" },
-];
+const SERVICE_ICONS = [ClipboardCheck, BookOpen, UsersRound, BarChart3];
 
-/** Original hero illustration: letters lifting out of an open book, with floating learning cards. */
+/**
+ * Hero composition: the brand illustration (child reading) in a soft lavender halo, a laptop
+ * previewing the AFAQ interface, and floating brand elements (stars, letters, pencil, clouds).
+ */
 export function HeroArt({ t }: { t: Dict["home"]["preview"] }) {
   return (
-    <figure className="animate-fade-up relative mx-auto aspect-[52/48] w-full max-w-[34rem] [animation-delay:200ms]" aria-label={t.label}>
-      <svg viewBox="0 0 520 480" className="absolute inset-0 size-full" aria-hidden>
-        {/* backdrop shapes */}
-        <circle cx="270" cy="250" r="198" fill="var(--primary-soft)" />
-        <circle cx="436" cy="92" r="40" fill="var(--sun)" opacity=".9" />
-        <path d="M30 250a110 110 0 0 1 110-110" fill="none" stroke="var(--blush)" strokeWidth="18" strokeLinecap="round" />
-        <circle cx="70" cy="120" r="7" fill="var(--teal)" />
-        <circle cx="470" cy="300" r="5" fill="var(--primary)" opacity=".5" />
+    <figure className="animate-fade-up relative mx-auto aspect-[10/9] w-full max-w-[36rem] [animation-delay:150ms]" aria-label={t.label}>
+      {/* flowing backdrop */}
+      <div aria-hidden className="absolute inset-[4%] rounded-[45%_55%_48%_52%/52%_45%_55%_48%] bg-[radial-gradient(circle_at_35%_30%,#EDE6FF,#D9CCFF_55%,#C7E4FB)] opacity-90 dark:opacity-25" />
+      <HorizonArc className="absolute start-[6%] top-[3%] w-[46%] rtl:-scale-x-100" />
+      <Cloud className="animate-float absolute start-[-2%] bottom-[14%] w-[22%] text-white/90 [animation-delay:-3s] dark:text-white/20" />
+      <Cloud className="animate-float absolute end-[2%] top-[4%] w-[18%] text-white/90 [animation-delay:-5s] dark:text-white/20" />
 
-        {/* journey path from the book up through the letters */}
-        <path
-          d="M262 330C200 300 120 290 128 246S220 196 216 182 300 150 312 164 400 210 400 228"
-          fill="none"
-          stroke="var(--primary)"
-          strokeOpacity=".35"
-          strokeWidth="2.5"
-          strokeDasharray="2 9"
-          strokeLinecap="round"
+      {/* brand illustration */}
+      <div className="absolute start-[4%] top-[8%] w-[56%]">
+        <Image
+          src="/brand/afaq-hero-child.webp"
+          alt=""
+          width={332}
+          height={468}
+          priority
+          sizes="(max-width: 640px) 55vw, 330px"
+          className="h-auto w-full [mask-image:radial-gradient(ellipse_56%_60%_at_52%_46%,black_58%,transparent_97%)]"
         />
-
-        {/* floating letter tiles */}
-        {TILES.map((tile) => (
-          <g key={tile.ch} className="animate-float [transform-box:fill-box]" style={{ animationDelay: tile.delay }}>
-            <g transform={`rotate(${tile.r} ${tile.x + 32} ${tile.y + 32})`}>
-              <rect x={tile.x} y={tile.y + 6} width="64" height="64" rx="16" fill="var(--ink)" opacity=".08" />
-              <rect x={tile.x} y={tile.y} width="64" height="64" rx="16" fill={tile.fill} stroke="var(--line)" strokeWidth={tile.fill === "#F7F5EF" ? 2 : 0} />
-              <text x={tile.x + 32} y={tile.y + 34} textAnchor="middle" dominantBaseline="central" fontSize="32" fontWeight="800" fill="#283C48">
-                {tile.ch}
-              </text>
-            </g>
-          </g>
-        ))}
-
-        {/* open book */}
-        <ellipse cx="262" cy="440" rx="190" ry="14" fill="var(--ink)" opacity=".08" />
-        <path d="M72 336c64-28 128-26 190 8v96c-62-32-126-34-190-8Z" fill="var(--surface)" stroke="var(--primary)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M452 336c-64-28-128-26-190 8v96c62-32 126-34 190-8Z" fill="var(--surface)" stroke="var(--primary)" strokeWidth="4" strokeLinejoin="round" />
-        <path
-          d="M104 362c40-12 76-10 120 6M104 386c40-12 76-10 120 6M300 368c44-16 80-18 120-6M300 392c44-16 80-18 120-6"
-          stroke="var(--primary)"
-          strokeOpacity=".25"
-          strokeWidth="5"
-          strokeLinecap="round"
-          fill="none"
-        />
-        <path d="M262 344v96" stroke="var(--primary)" strokeWidth="4" />
-
-      </svg>
-
-      {/* exercise card */}
-      <div className="glass animate-float absolute start-0 top-[3%] w-[min(14rem,46%)] rounded-2xl border p-3.5 shadow-[var(--shadow-float)] [animation-delay:-2s]" aria-hidden>
-        <p className="text-sm font-bold">{t.exercise}</p>
-        <p className="text-xs text-muted">{t.exerciseHint}</p>
-        <div className="mt-3 grid grid-cols-3 gap-2" dir="rtl">
-          {["ت", "ب", "ث"].map((l) => (
-            <span
-              key={l}
-              className={
-                l === "ب"
-                  ? "animate-pop relative grid aspect-square place-items-center rounded-xl border-2 border-mint bg-mint-soft text-2xl font-extrabold text-mint"
-                  : "grid aspect-square place-items-center rounded-xl border border-line bg-surface text-2xl font-extrabold text-ink/70"
-              }
-            >
-              {l}
-              {l === "ب" && (
-                <span className="absolute -end-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-mint text-white dark:text-[#0e1a20]">
-                  <Check className="size-3" strokeWidth={3.5} />
-                </span>
-              )}
-            </span>
-          ))}
-        </div>
       </div>
 
-      {/* encouragement chip */}
-      <div className="animate-pop absolute end-[2%] top-[34%] flex items-center gap-1.5 rounded-full bg-sun px-3.5 py-2 text-sm font-extrabold text-[#283C48] shadow-[var(--shadow-float)] [animation-delay:1.4s]" aria-hidden>
-        <Star className="size-4 fill-current" />
-        {t.cheer}
+      {/* laptop previewing the platform */}
+      <div aria-hidden className="animate-float absolute end-[0%] bottom-[6%] w-[60%] [animation-delay:-2s] [animation-duration:9s]">
+        <div className="rounded-[14px] bg-[#2b2253] p-[5px] shadow-[0_30px_60px_-24px_rgb(41_32_77/0.6)]">
+          <div className="overflow-hidden rounded-[10px] bg-white text-[#29204D]">
+            <div className="flex items-center justify-between gap-2 border-b border-[#efe9ff] px-2.5 py-1.5">
+              <span dir="ltr" className="flex items-center gap-1 text-[8px] font-extrabold text-[#4B2CBF]">
+                <LogoMark className="h-3.5 w-auto" />
+                AFAQ | آفاق
+              </span>
+              <span className="hidden gap-2 text-[6.5px] font-semibold text-[#5e5680] min-[420px]:flex">
+                {t.nav.map((n, i) => (
+                  <span key={n} className={i === 0 ? "rounded-full bg-[#4B2CBF] px-1.5 py-0.5 text-white" : ""}>
+                    {n}
+                  </span>
+                ))}
+              </span>
+            </div>
+            <div className="grid grid-cols-[1.3fr_1fr] items-center gap-2 bg-[linear-gradient(135deg,#F5F0FF,#EAF4FE)] px-3 py-3">
+              <div>
+                <p className="text-[10px] leading-tight font-extrabold text-[#29204D]">{t.headline}</p>
+                <span className="mt-2 inline-block rounded-full bg-[#4B2CBF] px-2 py-0.5 text-[7px] font-bold text-white">{t.cta} →</span>
+              </div>
+              <div className="relative h-14 overflow-hidden rounded-lg bg-[#E8DEFF]">
+                <GoldStar className="absolute end-1.5 top-1 w-4" />
+                <div className="absolute inset-x-0 bottom-0 h-6 rounded-t-[50%] bg-[#C7B5FB]" />
+                <div className="absolute inset-x-3 bottom-0 h-4 rounded-t-[50%] bg-[#F6B94D]/80" />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5 p-2">
+              {t.services.map((s, i) => {
+                const Icon = SERVICE_ICONS[i];
+                return (
+                  <div key={s} className="flex flex-col items-center gap-1 rounded-lg bg-[#F5F0FF] px-1 py-1.5 text-center">
+                    <Icon className="size-3 text-[#4B2CBF]" />
+                    <span className="text-[5.5px] leading-tight font-semibold">{s}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <div className="mx-auto h-[7px] w-[112%] -translate-x-[5%] rounded-b-xl bg-[linear-gradient(#d9d3ec,#b8afd6)] rtl:translate-x-[5%]" />
       </div>
 
-      {/* progress ring card */}
-      <div className="glass animate-float absolute end-0 bottom-[2%] flex items-center gap-3 rounded-2xl border p-3 pe-4 shadow-[var(--shadow-float)] [animation-delay:-4s]" aria-hidden>
-        <svg viewBox="0 0 40 40" className="size-12 -rotate-90">
-          <circle cx="20" cy="20" r="16" fill="none" stroke="var(--line)" strokeWidth="5" />
-          <circle cx="20" cy="20" r="16" fill="none" stroke="var(--teal)" strokeWidth="5" strokeLinecap="round" pathLength="100" strokeDasharray="100" strokeDashoffset="25" className="animate-ring" />
-        </svg>
-        <div>
-          <p className="text-xs text-muted">{t.progress}</p>
-          <p dir="ltr" className="text-lg font-extrabold text-primary">{t.progressValue}</p>
-        </div>
+      {/* floating brand elements */}
+      <GoldStar className="animate-float absolute end-[24%] top-[2%] w-[11%] [animation-duration:6s]" />
+      <Sparkle className="animate-twinkle absolute end-[12%] top-[22%] w-[4%]" color="#60B5F5" />
+      <Sparkle className="animate-twinkle absolute start-[50%] top-[12%] w-[3%] [animation-delay:-1.2s]" color="#A78BFA" />
+      <span aria-hidden className="animate-float absolute end-[36%] top-[16%] text-[clamp(1.5rem,4vw,2.6rem)] font-extrabold text-[#4B2CBF] [animation-delay:-1s] dark:text-[#C9B8FF]">
+        A
+      </span>
+      <span aria-hidden className="animate-float absolute end-[8%] top-[38%] font-[family-name:var(--font-alexandria)] text-[clamp(1.4rem,3.6vw,2.3rem)] font-bold text-[#7C5CE6] [animation-delay:-4s] dark:text-[#C9B8FF]">
+        ب
+      </span>
+      <Pencil className="animate-float absolute end-[20%] top-[24%] w-[5%] rotate-[28deg] [animation-delay:-2.5s]" />
+
+      <div aria-hidden className="animate-pop absolute start-[2%] top-[56%] flex items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-3 py-2 shadow-[var(--shadow-float)] backdrop-blur dark:border-white/10 dark:bg-[#1b1636]/90">
+        <GoldStar className="w-5" />
+        <span className="text-sm font-extrabold text-[#4B2CBF] dark:text-[#C9B8FF]">{t.cheer}</span>
       </div>
     </figure>
   );

@@ -4,9 +4,8 @@ import type { Dict } from "./ar";
 export const fr: Dict = {
   ...siteFr,
   meta: {
-    title: "Maharat Al Taallum",
-    description:
-      "Plateforme algérienne d'accompagnement des enfants en difficulté de lecture, d'écriture et d'orthographe, qui oriente les parents vers des spécialistes qualifiés.",
+    title: "AFAQ | آفاق",
+    description: "Plateforme algérienne d'accompagnement des enfants en difficulté d'apprentissage, qui relie les parents à des spécialistes qualifiés. Un nouvel horizon pour chaque enfant.",
   },
   common: {
     login: "Connexion",

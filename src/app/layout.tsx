@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic, Manrope } from "next/font/google";
+import { Alexandria, Plus_Jakarta_Sans, Tajawal } from "next/font/google";
 import { Toaster } from "@/components/toaster";
 import { RevealObserver } from "@/components/motion";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import { getI18n } from "@/lib/i18n/server";
 import "./globals.css";
 
-const manrope = Manrope({ subsets: ["latin", "latin-ext"], variable: "--font-manrope", display: "swap" });
-const plexArabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-plex-arabic", display: "swap" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta", display: "swap" });
+const alexandria = Alexandria({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-alexandria", display: "swap" });
+const tajawal = Tajawal({ subsets: ["arabic"], weight: ["400", "500", "700", "800"], variable: "--font-tajawal", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -15,14 +16,14 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
     title: { default: t.meta.title, template: `%s · ${t.meta.title}` },
     description: t.meta.description,
-    openGraph: { title: t.meta.title, description: t.meta.description, images: [{ url: "/brand/maharat-logo.png", width: 1536, height: 1024, alt: "Maharat Al Taallum — مهارات التعلم" }] },
+    openGraph: { title: t.meta.title, description: t.meta.description, images: [{ url: "/brand/afaq-brand-board.jpg", width: 1536, height: 1024, alt: "AFAQ | آفاق" }] },
   };
 }
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f5ef" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1a20" },
+    { media: "(prefers-color-scheme: light)", color: "#fbf9ff" },
+    { media: "(prefers-color-scheme: dark)", color: "#120e26" },
   ],
 };
 
@@ -34,7 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className={`${manrope.variable} ${plexArabic.variable} min-h-dvh`}>
+      <body className={`${jakarta.variable} ${alexandria.variable} ${tajawal.variable} min-h-dvh`}>
         {children}
         <Toaster />
         <RevealObserver locale={locale} />

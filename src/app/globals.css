@@ -4,23 +4,14 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * Maharat brand tokens. Raw palette values live in :root / [data-theme="dark"] below;
- * components only use the semantic names exposed here.
- *
- *   primary  Deep Teal   #245B73  navigation, headings, primary CTA
- *   teal     Soft Mint   #67B7A5  progress, positive and educational fills
- *   sun      Warm Yellow #F3C969  playful highlights, learning activities
- *   blush    Soft Coral  #F2A69B  secondary highlights
- *   canvas   Warm Ivory  #F7F5EF  page background
- *   ink      Ink Slate   #283C48  body text
- *
- * Fill colours (teal, sun, blush) are not text-safe on light backgrounds; the
- * matching *-ink / mint / coral tokens are the AA-contrast text variants.
+ * AFAQ brand tokens. The official palette lives in :root (--brand-*); components only use
+ * the semantic names below. Gold, lavender and sky are fills; *-ink / mint / coral / violet
+ * are their AA-contrast text variants.
  */
 @theme inline {
-  --font-sans: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, sans-serif;
-  --font-arabic: var(--font-plex-arabic), var(--font-manrope), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-jakarta), var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-alexandria), ui-sans-serif, sans-serif;
+  --font-arabic: var(--font-tajawal), var(--font-jakarta), ui-sans-serif, sans-serif;
 
   --color-ink: var(--ink);
   --color-muted: var(--muted);
@@ -120,64 +111,74 @@
 /* ── Color tokens ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  --canvas: #f7f5ef;
+  /* AFAQ official palette */
+  --brand-purple: #4b2cbf;
+  --brand-lavender: #a78bfa;
+  --brand-sky: #60b5f5;
+  --brand-gold: #f6b94d;
+  --brand-soft: #f5f0ff;
+  --brand-dark: #29204d;
+
+  --canvas: #fbf9ff;
   --surface: #ffffff;
-  --surface-2: #f0ede4;
-  --line: #e4dfd3;
-  --ink: #283c48;
-  --muted: #5a6b75;
+  --surface-2: #f5f0ff;
+  --line: #e7e0f8;
+  --ink: #29204d;
+  --muted: #5e5680;
 
-  --primary: #245b73;
-  --primary-strong: #1b4a5e;
+  --primary: #4b2cbf;
+  --primary-strong: #3a1fa0;
   --on-primary: #ffffff;
-  --primary-soft: #e2ecee;
-  --teal: #67b7a5;
-  --mint: #2b7766;
-  --mint-soft: #e3f2ee;
-  --sun: #f3c969;
-  --sun-soft: #fbf1d6;
-  --sun-ink: #7a5a12;
-  --blush: #f2a69b;
-  --blush-soft: #fceae6;
-  --coral: #b4483a;
-  --coral-soft: #fceae6;
-  --violet: #4f6390;
-  --violet-soft: #e9ecf4;
-  --marker: color-mix(in oklab, #f3c969 75%, transparent);
+  --primary-soft: #ede6ff;
+  --teal: #60b5f5;
+  --mint: #19805d;
+  --mint-soft: #e2f5ec;
+  --sun: #f6b94d;
+  --sun-soft: #fef3dc;
+  --sun-ink: #7a5300;
+  --blush: #a78bfa;
+  --blush-soft: #f1ecfe;
+  --coral: #b4304c;
+  --coral-soft: #fde8ed;
+  --violet: #1c6fb0;
+  --violet-soft: #e3f2fe;
+  --logo-deep: #4b2cbf;
+  --marker: color-mix(in oklab, #f6b94d 55%, transparent);
 
-  --shadow-card: 0 1px 2px rgb(40 60 72 / 0.05), 0 12px 32px -20px rgb(40 60 72 / 0.22);
-  --shadow-float: 0 24px 48px -24px rgb(36 91 115 / 0.35);
+  --shadow-card: 0 1px 2px rgb(41 32 77 / 0.05), 0 14px 34px -22px rgb(75 44 191 / 0.28);
+  --shadow-float: 0 26px 52px -26px rgb(75 44 191 / 0.45);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #0e1a20;
-  --surface: #13242c;
-  --surface-2: #1a2f38;
-  --line: #26414c;
-  --ink: #ecf1ef;
-  --muted: #a2b4b9;
+  --canvas: #120e26;
+  --surface: #1b1636;
+  --surface-2: #241d47;
+  --line: #352c63;
+  --ink: #f1edff;
+  --muted: #b5acd8;
 
-  --primary: #7fc0d3;
-  --primary-strong: #9bd0df;
-  --on-primary: #0e1a20;
-  --primary-soft: #193744;
-  --teal: #67b7a5;
-  --mint: #7acbb8;
-  --mint-soft: #163a33;
-  --sun: #f3c969;
-  --sun-soft: #3a3115;
-  --sun-ink: #f3d48c;
-  --blush: #f2a69b;
-  --blush-soft: #3d2420;
-  --coral: #f2a69b;
-  --coral-soft: #3d2420;
-  --violet: #a9b6da;
-  --violet-soft: #232c45;
-  --marker: color-mix(in oklab, #f3c969 38%, transparent);
+  --primary: #b9a3ff;
+  --primary-strong: #cdbcff;
+  --on-primary: #1a1236;
+  --primary-soft: #2d2360;
+  --teal: #60b5f5;
+  --mint: #6fd3aa;
+  --mint-soft: #133a2e;
+  --sun: #f6b94d;
+  --sun-soft: #3a2c10;
+  --sun-ink: #f8cf85;
+  --blush: #a78bfa;
+  --blush-soft: #2a2152;
+  --coral: #ff9bb0;
+  --coral-soft: #3d1a26;
+  --violet: #8fcbf8;
+  --violet-soft: #172c45;
+  --logo-deep: #c9b8ff;
+  --marker: color-mix(in oklab, #f6b94d 35%, transparent);
 
   --shadow-card: none;
-  --shadow-float: 0 24px 48px -24px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 26px 52px -26px rgb(0 0 0 / 0.7);
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -190,7 +191,7 @@ html {
 body {
   background: var(--canvas);
   color: var(--ink);
-  font-family: var(--font-manrope), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-jakarta), var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -199,7 +200,7 @@ body {
 
 /* Arabic pages lead with IBM Plex Sans Arabic; Manrope still covers Latin glyphs. */
 [lang="ar"] body {
-  font-family: var(--font-plex-arabic), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-tajawal), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   line-height: 1.8;
 }
 
@@ -215,6 +216,7 @@ h4 {
 }
 
 [lang="ar"] :is(h1, h2, h3, h4) {
+  font-family: var(--font-alexandria), var(--font-tajawal), sans-serif;
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.4;
@@ -299,10 +301,10 @@ p {
   @apply btn bg-primary text-on-primary hover:bg-primary-strong hover:shadow-[var(--shadow-float)];
 }
 @utility btn-sun {
-  @apply btn bg-sun text-[#283c48] hover:brightness-105 hover:shadow-[0_16px_32px_-16px_rgb(243_201_105/0.9)];
+  @apply btn bg-sun text-[#29204d] hover:brightness-105 hover:shadow-[0_16px_32px_-16px_rgb(246_185_77/0.9)];
 }
 @utility btn-mint {
-  @apply btn bg-mint text-white hover:brightness-110 dark:text-[#0e1a20];
+  @apply btn bg-mint text-white hover:brightness-110 dark:text-[#120e26];
 }
 @utility btn-ghost {
   @apply btn border border-line bg-surface text-ink hover:border-primary/40 hover:bg-surface-2;

@@ -4,9 +4,8 @@ import type { Dict } from "./ar";
 export const en: Dict = {
   ...siteEn,
   meta: {
-    title: "Maharat Al Taallum",
-    description:
-      "An Algerian platform supporting children who struggle with reading, writing and spelling, and guiding their parents toward qualified specialists.",
+    title: "AFAQ | آفاق",
+    description: "An Algerian educational support platform for children with learning difficulties, connecting parents with qualified specialists. A new horizon for every child.",
   },
   common: {
     login: "Log in",

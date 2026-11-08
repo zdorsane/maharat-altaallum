@@ -1,14 +1,17 @@
-# Maharat Al Taallum · مهارات التعلم
+# AFAQ | آفاق
 
-Plateforme algérienne d'accompagnement des enfants en difficulté de lecture, d'écriture et d'orthographe : dépôt de dossiers par les parents, examen pédagogique initial, orientation vers des spécialistes (orthophonistes, éducateurs spécialisés), exercices interactifs et suivi des progrès.
+**A new horizon for every child · نفتح آفاق التعلم لكل طفل · Learn • Grow • Achieve**
+
+Plateforme algérienne d'accompagnement des enfants en difficulté d'apprentissage (lecture, écriture, orthographe) : dépôt de dossiers par les parents, examen pédagogique initial, orientation vers des spécialistes, plans de soutien et suivi des progrès.
 
 > La plateforme ne pose aucun diagnostic médical ou psychologique. L'examen initial est une orientation pédagogique ; l'évaluation est réalisée par des spécialistes qualifiés.
 
 ## Identité visuelle
 
-- Palette : Deep Teal `#245B73`, Soft Mint `#67B7A5`, Warm Yellow `#F3C969`, Soft Coral `#F2A69B`, Warm Ivory `#F7F5EF`, Ink Slate `#283C48` — définie comme tokens dans `src/app/globals.css` (clair et sombre).
-- Typographie : Manrope (latin) et IBM Plex Sans Arabic (arabe), chargées via `next/font`.
-- Logo : `src/components/logo.tsx` (complet et symbole), favicon `src/app/icon.svg`.
+- Palette officielle : Primary Purple `#4B2CBF`, Lavender `#A78BFA`, Sky Blue `#60B5F5`, Golden Yellow `#F6B94D`, White `#FFFFFF`, Soft Background `#F5F0FF`, Professional Dark `#29204D` — tokens dans `src/app/globals.css` (clair et sombre, variantes de texte conformes WCAG AA).
+- Typographie : Plus Jakarta Sans (latin), Alexandria (titres arabes) et Tajawal (texte arabe), via `next/font`.
+- Logo (livre ouvert, enfant, étoile dorée, arc d'horizon) : `src/components/logo.tsx` — `LogoMark` (symbole), `Logo` (horizontal), `LogoStacked` (empilé avec slogan), variantes claire/sombre ; favicon `src/app/icon.svg`.
+- Kit d'illustration : `src/components/brand/decor.tsx` (étoile dorée, étincelles, nuages, arc d'horizon, crayon) ; visuels dans `public/brand/`.
 
 ## Fonctionnalités
 
