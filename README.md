@@ -18,21 +18,27 @@ Next.js 15 (App Router, Server Actions) · React 19 · TypeScript · Prisma 6 ·
 
 ## Démarrage
 
-Prérequis : Node.js 20+.
+Prérequis : Node.js 20+ et une base PostgreSQL (Neon, ou locale).
 
 ```bash
 npm install
-cp .env.example .env          # puis remplacer SESSION_SECRET par une chaîne aléatoire de 32+ caractères
-npm run db:push               # crée la base SQLite
-npm run db:seed               # comptes de démonstration
+cp .env.example .env          # renseigner DATABASE_URL, DATABASE_URL_UNPOOLED et SESSION_SECRET (32+ caractères)
+npm run db:deploy             # applique les migrations
+npm run db:seed               # comptes de démonstration (développement uniquement)
 npm run dev                   # http://localhost:3000
 ```
 
 Comptes de démonstration (mot de passe `Maharat2026!`) : `admin@`, `reviewer@`, `specialist@`, `parent@maharat.local`. Le seed refuse de s'exécuter en production.
 
+## Déploiement (Vercel + Neon)
+
+- La base Neon est connectée au projet Vercel ; elle fournit `DATABASE_URL` et `DATABASE_URL_UNPOOLED`.
+- À chaque déploiement, `npm run build:vercel` applique les migrations, puis `prisma/bootstrap.ts` crée les catégories de dossiers et le premier super-administrateur (à partir de `ADMIN_EMAIL` et `ADMIN_PASSWORD_HASH`, un hash bcrypt), puis compile l'application.
+- Variables requises en production : `SESSION_SECRET`, `APP_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`.
+
 ## Base de données
 
-SQLite en développement. Pour PostgreSQL, mettre `provider = "postgresql"` dans `prisma/schema.prisma` et renseigner `DATABASE_URL`.
+PostgreSQL via Prisma. Les migrations sont dans `prisma/migrations` ; après une modification du schéma, `npm run db:migrate`.
 
 ## Scripts
 

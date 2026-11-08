@@ -1,14 +1,15 @@
-// Maharat Al Taallum — relational data model.
+// Maharat Al Taallum — relational data model (PostgreSQL).
 // Enum-like fields are stored as strings (validated in src/lib/constants.ts) so the
-// same schema runs on SQLite (local dev) and PostgreSQL (production).
+// schema stays portable across databases.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 // ───────────────────────────── Identity ─────────────────────────────

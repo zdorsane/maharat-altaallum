@@ -7,3 +7,7 @@ storage/uploads/*
 !storage/uploads/.gitkeep
 next-env.d.ts
 *.tsbuildinfo
+.vercel
+
+.vercel
+.env*
