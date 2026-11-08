@@ -111,6 +111,11 @@
 /* ── Color tokens ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
+  /* Self-hosted font families (see fonts.css) */
+  --font-jakarta: "Plus Jakarta Sans";
+  --font-alexandria: "Alexandria";
+  --font-tajawal: "Tajawal";
+
   /* AFAQ official palette */
   --brand-purple: #4b2cbf;
   --brand-lavender: #a78bfa;

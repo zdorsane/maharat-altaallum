@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Alexandria, Plus_Jakarta_Sans, Tajawal } from "next/font/google";
 import { Toaster } from "@/components/toaster";
 import { RevealObserver } from "@/components/motion";
 import { THEME_SCRIPT } from "@/components/theme-toggle";
 import { getI18n } from "@/lib/i18n/server";
+import "./fonts.css";
 import "./globals.css";
-
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta", display: "swap" });
-const alexandria = Alexandria({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-alexandria", display: "swap" });
-const tajawal = Tajawal({ subsets: ["arabic"], weight: ["400", "500", "700", "800"], variable: "--font-tajawal", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -34,8 +30,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={dir} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <link rel="preload" href={locale === "ar" ? "/fonts/tajawal-arabic-400.woff2" : "/fonts/plus-jakarta-sans-latin-400-800.woff2"} as="font" type="font/woff2" crossOrigin="" />
       </head>
-      <body className={`${jakarta.variable} ${alexandria.variable} ${tajawal.variable} min-h-dvh`}>
+      <body className="min-h-dvh">
         {children}
         <Toaster />
         <RevealObserver locale={locale} />
