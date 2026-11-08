@@ -1,0 +1,518 @@
+// Maharat Al Taallum — relational data model.
+// Enum-like fields are stored as strings (validated in src/lib/constants.ts) so the
+// same schema runs on SQLite (local dev) and PostgreSQL (production).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Identity ─────────────────────────────
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  fullName         String
+  phone            String?
+  role             String    @default("PARENT") // SUPER_ADMIN | ADMIN | REVIEWER | SPECIALIST | PARENT
+  locale           String    @default("ar")
+  isActive         Boolean   @default(true)
+  sessionVersion   Int       @default(1)
+  resetTokenHash   String?
+  resetTokenExpiry DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  parentProfile     ParentProfile?
+  specialist        Specialist?
+  casesAsReviewer   Case[]          @relation("CaseReviewer")
+  reviews           CaseReview[]
+  notes             CaseNote[]
+  events            CaseEvent[]
+  sentMessages      Message[]       @relation("MessageSender")
+  receivedMessages  Message[]       @relation("MessageRecipient")
+  notifications     Notification[]
+  articles          EducationalArticle[]
+  auditLogs         AuditLog[]
+  uploadedDocuments CaseDocument[]
+  createdAppointments Appointment[] @relation("AppointmentCreator")
+  createdReferrals  Referral[]
+  assignedActivities ChildActivity[]
+  programs          Program[]
+
+  @@index([role])
+}
+
+model ParentProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  wilaya    String
+  consentAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  children Child[]
+}
+
+// ───────────────────────────── Children & cases ─────────────────────────────
+
+model Child {
+  id                  String   @id @default(cuid())
+  parentId            String
+  firstName           String
+  birthDate           DateTime
+  schoolLevel         String
+  schoolLanguage      String
+  observations        String?
+  previousAssessments String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  parent         ParentProfile    @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  cases          Case[]
+  appointments   Appointment[]
+  assessments    Assessment[]
+  supportPlans   SupportPlan[]
+  activities     ChildActivity[]
+  results        ActivityResult[]
+  progress       ProgressRecord[]
+
+  @@index([parentId])
+}
+
+model CaseCategory {
+  id    String @id @default(cuid())
+  key   String @unique // READING | WRITING | SPELLING | LETTERS | SOUNDS | OTHER
+  order Int    @default(0)
+  cases Case[]
+}
+
+model Case {
+  id                   String    @id @default(cuid())
+  reference            String    @unique
+  childId              String
+  status               String    @default("RECEIVED")
+  description          String
+  otherCategory        String?
+  firstNoticed         String
+  situations           String
+  priorSupport         String    // NONE | ASSESSMENT | SUPPORT | BOTH
+  priorSupportDetails  String?
+  consentAt            DateTime
+  assignedReviewerId   String?
+  assignedSpecialistId String?
+  closedAt             DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  child              Child          @relation(fields: [childId], references: [id], onDelete: Cascade)
+  categories         CaseCategory[]
+  assignedReviewer   User?          @relation("CaseReviewer", fields: [assignedReviewerId], references: [id], onDelete: SetNull)
+  assignedSpecialist Specialist?    @relation("CaseSpecialist", fields: [assignedSpecialistId], references: [id], onDelete: SetNull)
+  documents          CaseDocument[]
+  reviews            CaseReview[]
+  notes              CaseNote[]
+  events             CaseEvent[]
+  appointments       Appointment[]
+  assessments        Assessment[]
+  referrals          Referral[]
+  messages           Message[]
+
+  @@index([status])
+  @@index([childId])
+  @@index([assignedReviewerId])
+  @@index([assignedSpecialistId])
+  @@index([createdAt])
+}
+
+model CaseDocument {
+  id           String   @id @default(cuid())
+  caseId       String
+  fileName     String
+  storedName   String   @unique
+  mimeType     String
+  size         Int
+  uploadedById String
+  createdAt    DateTime @default(now())
+
+  case       Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  uploadedBy User @relation(fields: [uploadedById], references: [id])
+
+  @@index([caseId])
+}
+
+/// Structured initial orientation — never a diagnosis.
+model CaseReview {
+  id             String   @id @default(cuid())
+  caseId         String
+  reviewerId     String
+  areas          String   // comma-separated category keys observed in the file
+  completeness   String   // COMPLETE | PARTIAL | INSUFFICIENT
+  priority       String   // NORMAL | PRIORITY
+  summary        String
+  recommendation String   // MORE_INFO | ASSESSMENT | SPECIALIST | GUIDANCE_ONLY
+  createdAt      DateTime @default(now())
+
+  case     Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  reviewer User @relation(fields: [reviewerId], references: [id])
+
+  @@index([caseId])
+}
+
+/// Internal, staff-only notes. Never shown to parents.
+model CaseNote {
+  id        String   @id @default(cuid())
+  caseId    String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id])
+
+  @@index([caseId])
+}
+
+/// Timeline of a case. `visibleToParent` controls what the parent portal shows.
+model CaseEvent {
+  id              String   @id @default(cuid())
+  caseId          String
+  actorId         String?
+  type            String   // SUBMITTED | STATUS | ASSIGNED | INFO_REQUEST | APPOINTMENT | REFERRAL | MESSAGE | DOCUMENT
+  fromStatus      String?
+  toStatus        String?
+  message         String?
+  visibleToParent Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  case  Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, createdAt])
+}
+
+// ───────────────────────────── Specialists ─────────────────────────────
+
+model Specialist {
+  id              String   @id @default(cuid())
+  userId          String?  @unique // null for external referral partners without an account
+  displayName     String
+  title           String
+  specialization  String   // ORTHOPHONIST | EDU_PSYCH | SPECIAL_ED | PSYCHOLOGIST | TRAINER
+  bio             String
+  yearsExperience Int
+  wilaya          String
+  languages       String   // comma-separated: ar,fr,en,tz
+  services        String   // newline-separated
+  availability    String
+  photoUrl        String?
+  isPublic        Boolean  @default(true)
+  isExternal      Boolean  @default(false)
+  isDemo          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user           User?                     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  qualifications SpecialistQualification[]
+  cases          Case[]                    @relation("CaseSpecialist")
+  appointments   Appointment[]
+  assessments    Assessment[]
+  supportPlans   SupportPlan[]
+  referrals      Referral[]
+  progress       ProgressRecord[]
+
+  @@index([specialization])
+  @@index([wilaya])
+}
+
+model SpecialistQualification {
+  id           String  @id @default(cuid())
+  specialistId String
+  title        String
+  institution  String
+  year         Int?
+
+  specialist Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────────────────── Assessment & support ─────────────────────────────
+
+model Appointment {
+  id           String   @id @default(cuid())
+  caseId       String?
+  childId      String
+  specialistId String
+  createdById  String
+  kind         String   @default("ASSESSMENT") // ASSESSMENT | SESSION | FOLLOW_UP
+  scheduledAt  DateTime
+  durationMin  Int      @default(45)
+  mode         String   // IN_PERSON | ONLINE
+  location     String?
+  status       String   @default("PROPOSED") // PROPOSED | CONFIRMED | CANCELLED | COMPLETED
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  case       Case?      @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  child      Child      @relation(fields: [childId], references: [id], onDelete: Cascade)
+  specialist Specialist @relation(fields: [specialistId], references: [id])
+  createdBy  User       @relation("AppointmentCreator", fields: [createdById], references: [id])
+
+  @@index([childId])
+  @@index([specialistId, scheduledAt])
+  @@index([status])
+}
+
+/// Professional assessment record — written by a qualified specialist only.
+model Assessment {
+  id               String   @id @default(cuid())
+  childId          String
+  caseId           String?
+  specialistId     String
+  date             DateTime
+  type             String
+  observations     String
+  needs            String
+  recommendations  String
+  supportSuggestion String?
+  nextSteps        String?
+  sharedWithParent Boolean  @default(false)
+  parentSummary    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  child      Child      @relation(fields: [childId], references: [id], onDelete: Cascade)
+  case       Case?      @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  specialist Specialist @relation(fields: [specialistId], references: [id])
+
+  @@index([childId])
+}
+
+model SupportPlan {
+  id                 String   @id @default(cuid())
+  childId            String
+  specialistId       String
+  title              String
+  objectives         String   // newline-separated
+  targetSkills       String   // newline-separated
+  activities         String   // newline-separated
+  frequency          String
+  progressIndicators String   // newline-separated
+  reviewDate         DateTime
+  status             String   @default("ACTIVE") // ACTIVE | COMPLETED | PAUSED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  child      Child      @relation(fields: [childId], references: [id], onDelete: Cascade)
+  specialist Specialist @relation(fields: [specialistId], references: [id])
+
+  @@index([childId])
+}
+
+model Referral {
+  id             String   @id @default(cuid())
+  caseId         String
+  specialistId   String?
+  specialization String
+  reason         String
+  contactInfo    String
+  status         String   @default("PROPOSED") // PROPOSED | CONTACTED | ACCEPTED | COMPLETED | DECLINED
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  case       Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  specialist Specialist? @relation(fields: [specialistId], references: [id], onDelete: SetNull)
+  createdBy  User        @relation(fields: [createdById], references: [id])
+
+  @@index([caseId])
+}
+
+/// Session observations and progress notes recorded by specialists.
+model ProgressRecord {
+  id               String   @id @default(cuid())
+  childId          String
+  specialistId     String
+  kind             String   @default("SESSION") // SESSION | OBSERVATION
+  skill            String
+  observation      String
+  sharedWithParent Boolean  @default(false)
+  parentNote       String?
+  recordedAt       DateTime @default(now())
+
+  child      Child      @relation(fields: [childId], references: [id], onDelete: Cascade)
+  specialist Specialist @relation(fields: [specialistId], references: [id])
+
+  @@index([childId, recordedAt])
+}
+
+// ───────────────────────────── Learning programs ─────────────────────────────
+
+model Program {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  category    String   // LETTER_RECOGNITION | PRONUNCIATION | SOUND_DISCRIMINATION | LETTER_SOUND | SYLLABLES | READING | WRITING | SPELLING
+  ageMin      Int
+  ageMax      Int
+  level       Int      @default(1)
+  color       String   @default("mint")
+  isPublished Boolean  @default(true)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  lessons     Lesson[]
+  assignments ChildActivity[]
+
+  @@index([category])
+}
+
+model Lesson {
+  id        String     @id @default(cuid())
+  programId String
+  title     String
+  order     Int        @default(0)
+  program   Program    @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises Exercise[]
+
+  @@index([programId])
+}
+
+model Exercise {
+  id       String @id @default(cuid())
+  lessonId String
+  type     String // LETTER_PICK | SOUND_PICK | MATCH_IMAGE | BUILD_WORD | SPELL | READ
+  title    String
+  prompt   String
+  config   String // JSON, validated by src/lib/exercises.ts
+  order    Int    @default(0)
+
+  lesson  Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  results ActivityResult[]
+
+  @@index([lessonId])
+}
+
+/// A program assigned to a child by a specialist or administrator.
+model ChildActivity {
+  id           String    @id @default(cuid())
+  childId      String
+  programId    String
+  assignedById String
+  note         String?
+  dueDate      DateTime?
+  assignedAt   DateTime  @default(now())
+
+  child      Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+  program    Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  assignedBy User    @relation(fields: [assignedById], references: [id])
+
+  @@unique([childId, programId])
+}
+
+/// One real attempt of an exercise by a child. Progress views are computed only from these rows.
+model ActivityResult {
+  id          String   @id @default(cuid())
+  childId     String
+  exerciseId  String
+  correct     Int
+  total       Int
+  attempts    Int
+  durationSec Int
+  completedAt DateTime @default(now())
+
+  child    Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([childId, completedAt])
+}
+
+// ───────────────────────────── Communication ─────────────────────────────
+
+model Message {
+  id          String    @id @default(cuid())
+  caseId      String?
+  senderId    String
+  recipientId String
+  body        String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  case      Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  sender    User  @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User  @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, readAt])
+  @@index([caseId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+model EducationalArticle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  body        String   // paragraphs separated by blank lines; lines starting with "- " become list items
+  topic       String
+  readMinutes Int      @default(4)
+  isPublished Boolean  @default(true)
+  authorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  body      String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  meta      String?
+  createdAt DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
