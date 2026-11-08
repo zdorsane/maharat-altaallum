@@ -1,6 +1,8 @@
+import { parentAr } from "./parent-ar";
 import { siteAr } from "./site-ar";
 export const ar = {
   ...siteAr,
+  ...parentAr,
   meta: {
     title: "آفاق | AFAQ",
     description: "منصة جزائرية لمرافقة الأطفال الذين يواجهون صعوبات في التعلّم، تربط الأولياء بمختصين تربويين مؤهلين. نفتح آفاق التعلم لكل طفل.",

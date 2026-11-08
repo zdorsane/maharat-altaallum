@@ -1,8 +1,10 @@
+import { parentFr } from "./parent-fr";
 import { siteFr } from "./site-fr";
 import type { Dict } from "./ar";
 
 export const fr: Dict = {
   ...siteFr,
+  ...parentFr,
   meta: {
     title: "AFAQ | آفاق",
     description: "Plateforme algérienne d'accompagnement des enfants en difficulté d'apprentissage, qui relie les parents à des spécialistes qualifiés. Un nouvel horizon pour chaque enfant.",

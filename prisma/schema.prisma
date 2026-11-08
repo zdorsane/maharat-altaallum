@@ -140,6 +140,8 @@ model CaseDocument {
   storedName   String   @unique
   mimeType     String
   size         Int
+  /// File bytes (stored in Postgres: serverless hosts have no persistent disk).
+  data         Bytes?
   uploadedById String
   createdAt    DateTime @default(now())
 

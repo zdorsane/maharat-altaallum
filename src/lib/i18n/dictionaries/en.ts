@@ -1,8 +1,10 @@
+import { parentEn } from "./parent-en";
 import { siteEn } from "./site-en";
 import type { Dict } from "./ar";
 
 export const en: Dict = {
   ...siteEn,
+  ...parentEn,
   meta: {
     title: "AFAQ | آفاق",
     description: "An Algerian educational support platform for children with learning difficulties, connecting parents with qualified specialists. A new horizon for every child.",
