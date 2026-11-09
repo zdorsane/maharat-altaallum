@@ -9,7 +9,6 @@ import { ageLabel, formatDate, formatDateTime, initials, lines } from "@/lib/uti
 import { Badge, EmptyState, Section } from "@/components/ui";
 import { BackLink, Detail } from "@/components/parent/bits";
 import { AssessmentSummary } from "@/components/assessment/summary";
-import { startAssessmentAction } from "@/app/parent/assessment-actions";
 import { EDITABLE_CASE_STATUSES } from "@/lib/assessment";
 import { wilayaName } from "@/lib/constants";
 
@@ -34,7 +33,6 @@ export default async function ChildPage({ params }: { params: Promise<{ id: stri
       parent: { select: { wilaya: true, user: { select: { email: true, phone: true } } } },
     },
   });
-  const draft = child.difficultyAssessments.find((x) => x.status === "DRAFT");
   const submitted = child.difficultyAssessments.filter((x) => x.status === "SUBMITTED");
   const ax = t.assessment;
 
@@ -62,29 +60,15 @@ export default async function ChildPage({ params }: { params: Promise<{ id: stri
             <Pencil className="size-4" />
             {c.edit}
           </Link>
-          <form action={startAssessmentAction}>
-            <input type="hidden" name="childId" value={child.id} />
-            <button className="btn-primary">
-              <ClipboardList className="size-4" />
-              {draft ? ax.continue : ax.start}
-            </button>
-          </form>
+          <Link href={`/parent/cases/new?child=${child.id}`} className="btn-primary">
+            <ClipboardList className="size-4" />
+            {ax.start}
+          </Link>
         </div>
       </div>
 
       <Section title={ax.sectionTitle} className="mb-6">
-        {draft && (
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-sun/50 bg-sun-soft/60 p-4">
-            <div>
-              <Badge tone="warn">{ax.draftBadge}</Badge>
-              <p className="mt-1 text-sm text-muted">{fmt(ax.lastSaved, { date: formatDateTime(draft.updatedAt, locale) })}</p>
-            </div>
-            <Link href={`/parent/assessments/${draft.id}`} className="btn-primary">
-              {ax.continue}
-            </Link>
-          </div>
-        )}
-        {submitted.length === 0 && !draft && <EmptyState title={ax.noAssessment} />}
+        {submitted.length === 0 && <EmptyState title={ax.noAssessment} />}
         <div className="space-y-6">
           {submitted.map((s) => (
             <article key={s.id} className="rounded-2xl border border-line p-5">
@@ -96,7 +80,7 @@ export default async function ChildPage({ params }: { params: Promise<{ id: stri
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {s.case && EDITABLE_CASE_STATUSES.includes(s.case.status) && (
-                    <Link href={`/parent/assessments/${s.id}`} className="btn-ghost">
+                    <Link href={`/parent/cases/new?assessment=${s.id}`} className="btn-ghost">
                       <Pencil className="size-4" />
                       {ax.editAnswers}
                     </Link>

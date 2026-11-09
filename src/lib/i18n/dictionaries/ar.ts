@@ -1,3 +1,4 @@
+import { quickAr } from "./quick-ar";
 import { assessAr } from "./assess-ar";
 import { parentAr } from "./parent-ar";
 import { siteAr } from "./site-ar";
@@ -5,6 +6,7 @@ export const ar = {
   ...siteAr,
   ...parentAr,
   ...assessAr,
+  ...quickAr,
   meta: {
     title: "آفاق | AFAQ",
     description: "منصة جزائرية لمرافقة الأطفال الذين يواجهون صعوبات في التعلّم، تربط الأولياء بمختصين تربويين مؤهلين. نفتح آفاق التعلم لكل طفل.",

@@ -1,6 +1,5 @@
 node_modules
 .next
-.env
 *.db
 *.db-journal
 storage/uploads/*
@@ -10,4 +9,4 @@ next-env.d.ts
 .vercel
 
 .vercel
-.env*
+config.bat

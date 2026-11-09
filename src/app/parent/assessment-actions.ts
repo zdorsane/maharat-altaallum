@@ -1,174 +1,105 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { audit, flash, rateLimit } from "@/lib/server-utils";
+import { audit, rateLimit } from "@/lib/server-utils";
 import type { ActionState } from "@/lib/action";
-import { PRIOR_SUPPORT } from "@/lib/constants";
 import { fmt } from "@/lib/i18n/config";
 import { getI18n, type Dict } from "@/lib/i18n/server";
-import {
-  CONSULTATION_MODES,
-  EDITABLE_CASE_STATUSES,
-  SECTION_KEYS,
-  isDifficulty,
-  sectionDone,
-  sectionsWithItems,
-  splitList,
-} from "@/lib/assessment";
-import { caseStaffRecipients, getOwnedChild, newCaseReference, notifyUsers, readUploads, requireParent, storeDocuments } from "@/lib/parent";
+import { DIFFICULTY_SECTIONS, EDITABLE_CASE_STATUSES, isDifficulty, sectionsWithItems } from "@/lib/assessment";
+import { caseStaffRecipients, newCaseReference, notifyUsers, requireParent } from "@/lib/parent";
 
-export type AssessmentInput = {
-  items: string[];
-  clearSections: string[];
-  summary: string;
-  priorSupport: string;
-  priorSupportDetails: string;
-  consultationMode: string;
-  consultationNote: string;
-};
-
-/** Loads an assessment owned by this parent (404 otherwise). */
-async function ownedAssessment(parentProfileId: string, id: string) {
-  const a = await db.difficultyAssessment.findFirst({
-    where: { id, child: { parentId: parentProfileId } },
-    include: { child: true, case: { select: { id: true, status: true, reference: true } } },
+/** Plain-text version of the automatic summary, stored as the case description. */
+function summaryText(t: Dict, childName: string, items: string[], notes: string) {
+  const groups = sectionsWithItems(items).map((s, i) => {
+    const lines = DIFFICULTY_SECTIONS[s].filter((k) => items.includes(k)).map((k) => `- ${t.assessment.items[k]}`);
+    return `${t.quick.ordinals[i]} ${t.quick.cards[s].subtitle}\n${lines.join("\n")}`;
   });
-  if (!a) notFound();
-  return a;
+  return [`${t.quick.childLabel} ${childName}`, t.quick.difficultiesLabel, ...groups, notes ? `${t.quick.notes}\n${notes}` : ""].filter(Boolean).join("\n\n");
 }
 
-const isEditable = (a: { status: string; case: { status: string } | null }) =>
-  a.status === "DRAFT" || (a.case !== null && EDITABLE_CASE_STATUSES.includes(a.case.status));
-
-/** Keeps only known keys and bounded text, so drafts can be saved at any stage. */
-function sanitize(input: AssessmentInput) {
-  const items = [...new Set(input.items.filter(isDifficulty))];
-  const clearSections = [...new Set(input.clearSections.filter((s) => (SECTION_KEYS as string[]).includes(s)))]
-    // "nothing observed" and ticked items are mutually exclusive within a section.
-    .filter((s) => !sectionsWithItems(items).includes(s as never));
-  return {
-    items: items.join(","),
-    clearSections: clearSections.join(","),
-    summary: input.summary.trim().slice(0, 5000) || null,
-    priorSupport: (PRIOR_SUPPORT as readonly string[]).includes(input.priorSupport) ? input.priorSupport : null,
-    priorSupportDetails: input.priorSupportDetails.trim().slice(0, 1500) || null,
-    consultationMode: (CONSULTATION_MODES as readonly string[]).includes(input.consultationMode) ? input.consultationMode : null,
-    consultationNote: input.consultationNote.trim().slice(0, 500) || null,
-  };
-}
-
-/** Errors that block submission, keyed by wizard field. */
-function completenessErrors(a: ReturnType<typeof sanitize>, t: Dict) {
-  const e: Record<string, string> = {};
-  const items = splitList(a.items);
-  const clear = splitList(a.clearSections);
-  if (!SECTION_KEYS.every((s) => sectionDone(s, items, clear))) e.sections = t.assessment.errors.sections;
-  else if (items.length === 0) e.sections = t.assessment.errors.noItem;
-  if ((a.summary ?? "").length < 30) e.summary = t.assessment.errors.summary;
-  if (!a.priorSupport) e.priorSupport = t.parent.caseForm.errors.priorSupport;
-  if (!a.consultationMode) e.consultationMode = t.assessment.errors.mode;
-  return e;
-}
-
-/** Opens the child's current draft, or creates one. */
-export async function startAssessmentAction(formData: FormData) {
-  const user = await requireParent();
-  const child = await getOwnedChild(user.parentProfileId, String(formData.get("childId") ?? ""));
-  const draft =
-    (await db.difficultyAssessment.findFirst({ where: { childId: child.id, status: "DRAFT" }, orderBy: { updatedAt: "desc" }, select: { id: true } })) ??
-    (await db.difficultyAssessment.create({ data: { childId: child.id }, select: { id: true } }));
-  await audit(user.id, "ASSESSMENT_OPEN", "DifficultyAssessment", draft.id);
-  redirect(`/parent/assessments/${draft.id}`);
-}
-
-/** Persists the wizard state (called on every step change and on "Save draft"). */
-export async function saveAssessmentAction(id: string, input: AssessmentInput): Promise<{ ok: boolean; savedAt?: string; error?: string }> {
+/**
+ * Submits (or updates) a learning-difficulty assessment: child + ticked problems + optional notes.
+ * Creates the case the team and the assigned specialist work from.
+ */
+export async function submitQuickAssessmentAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const user = await requireParent();
   const { t } = await getI18n();
-  const a = await ownedAssessment(user.parentProfileId, id);
-  if (!isEditable(a)) return { ok: false, error: t.assessment.errors.locked };
-  if (!rateLimit(`assess-save:${user.id}`, 120, 10 * 60 * 1000)) return { ok: false, error: t.parent.caseForm.errors.tooManyRequests };
+  const e = t.quick.errors;
 
-  // While submitted, edits stay in the draft fields until the parent confirms them.
-  const data = sanitize(input);
-  const saved = await db.difficultyAssessment.update({ where: { id: a.id }, data, select: { updatedAt: true } });
-  return { ok: true, savedAt: saved.updatedAt.toISOString() };
-}
+  const childId = String(formData.get("childId") ?? "");
+  const items = [...new Set(formData.getAll("items").map(String).filter(isDifficulty))];
+  const notes = String(formData.get("notes") ?? "").trim().slice(0, 3000);
+  const assessmentId = String(formData.get("assessmentId") ?? "") || null;
 
-/** Final submission (or confirmation of edits to an already-submitted assessment). */
-export async function submitAssessmentAction(_: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireParent();
-  const { t } = await getI18n();
-  const a = await ownedAssessment(user.parentProfileId, String(formData.get("id") ?? ""));
-  if (!isEditable(a)) return { ok: false, message: t.assessment.errors.locked };
-
-  const current = sanitize({
-    items: splitList(a.items),
-    clearSections: splitList(a.clearSections),
-    summary: a.summary ?? "",
-    priorSupport: a.priorSupport ?? "",
-    priorSupportDetails: a.priorSupportDetails ?? "",
-    consultationMode: a.consultationMode ?? "",
-    consultationNote: a.consultationNote ?? "",
-  });
-  const errors = completenessErrors(current, t);
-  if (formData.get("consent") !== "on") errors.consent = t.parent.caseForm.errors.consent;
-  const uploads = await readUploads(formData);
-  if ("error" in uploads) errors.documents = t.parent.caseForm.errors[uploads.error];
+  const errors: Record<string, string> = {};
+  if (!childId) errors.childId = e.child;
+  if (items.length === 0) errors.items = e.items;
   if (Object.keys(errors).length) return { ok: false, errors };
 
-  const categories = sectionsWithItems(splitList(current.items)).map((key) => ({ key }));
+  // Ownership: the child must belong to this parent (no leak about other families).
+  const child = await db.child.findFirst({ where: { id: childId, parentId: user.parentProfileId }, select: { id: true, firstName: true } });
+  if (!child) return { ok: false, errors: { childId: e.child } };
 
-  // ── Edits to a submitted assessment: update the open case. ──
-  if (a.status === "SUBMITTED" && a.case) {
-    await db.case.update({
-      where: { id: a.case.id },
-      data: {
-        description: current.summary!,
-        priorSupport: current.priorSupport!,
-        priorSupportDetails: current.priorSupportDetails,
-        categories: { set: categories },
-        events: { create: { type: "ASSESSMENT_UPDATED", actorId: user.id } },
-      },
+  const itemsStr = items.join(",");
+  const categories = sectionsWithItems(items).map((key) => ({ key }));
+  const description = summaryText(t, child.firstName, items, notes);
+
+  // ── Update an already-submitted assessment (allowed until the team starts reviewing). ──
+  if (assessmentId) {
+    const a = await db.difficultyAssessment.findFirst({
+      where: { id: assessmentId, childId: child.id, status: "SUBMITTED" },
+      include: { case: { select: { id: true, status: true, reference: true } } },
     });
-    if ("files" in uploads && uploads.files.length) await storeDocuments(a.case.id, user.id, uploads.files);
+    if (!a?.case || !EDITABLE_CASE_STATUSES.includes(a.case.status)) return { ok: false, message: e.locked };
+    await db.$transaction([
+      db.difficultyAssessment.update({ where: { id: a.id }, data: { items: itemsStr, clearSections: "", summary: notes || null } }),
+      db.case.update({
+        where: { id: a.case.id },
+        data: { description, categories: { set: categories }, events: { create: { type: "ASSESSMENT_UPDATED", actorId: user.id } } },
+      }),
+    ]);
     await audit(user.id, "ASSESSMENT_UPDATE", "DifficultyAssessment", a.id);
     await notifyUsers(await caseStaffRecipients(a.case.id), (tt) => ({ title: tt.assessment.eventUpdated, body: a.case!.reference }), `/review/cases/${a.case.id}`);
-    await flash(t.assessment.updated);
-    redirect(`/parent/cases/${a.case.id}`);
+    revalidatePath(`/parent/cases/${a.case.id}`);
+    return { ok: true, data: { caseId: a.case.id, reference: a.case.reference, updated: true } };
   }
 
-  // ── First submission: open a case linked to the assessment. ──
+  // ── Duplicate guard: an identical submission for this child in the last 2 minutes. ──
+  const duplicate = await db.difficultyAssessment.findFirst({
+    where: { childId: child.id, status: "SUBMITTED", items: itemsStr, submittedAt: { gte: new Date(Date.now() - 2 * 60 * 1000) } },
+    include: { case: { select: { id: true, reference: true } } },
+  });
+  if (duplicate?.case) return { ok: true, data: { caseId: duplicate.case.id, reference: duplicate.case.reference } };
+
   if (!rateLimit(`case:${user.id}`, 5, 60 * 60 * 1000)) return { ok: false, message: t.parent.caseForm.errors.tooManyRequests };
+
   const reference = await newCaseReference();
   const created = await db.$transaction(async (tx) => {
     const c = await tx.case.create({
       data: {
         reference,
-        childId: a.childId,
-        description: current.summary!,
-        priorSupport: current.priorSupport!,
-        priorSupportDetails: current.priorSupportDetails,
+        childId: child.id,
+        description,
+        // The confirmation dialog states who will see the assessment; confirming is the consent.
         consentAt: new Date(),
         categories: { connect: categories },
         events: { create: { type: "SUBMITTED", actorId: user.id, toStatus: "RECEIVED" } },
       },
     });
-    await tx.difficultyAssessment.update({ where: { id: a.id }, data: { status: "SUBMITTED", submittedAt: new Date(), caseId: c.id } });
+    await tx.difficultyAssessment.create({
+      data: { childId: child.id, caseId: c.id, status: "SUBMITTED", submittedAt: new Date(), items: itemsStr, summary: notes || null },
+    });
     return c;
   });
-  if ("files" in uploads && uploads.files.length) await storeDocuments(created.id, user.id, uploads.files);
 
-  await audit(user.id, "ASSESSMENT_SUBMIT", "DifficultyAssessment", a.id, { reference });
+  await audit(user.id, "ASSESSMENT_SUBMIT", "Case", created.id, { reference, items: items.length });
   await notifyUsers(
     await caseStaffRecipients(null),
-    (tt) => ({ title: tt.parent.notif.caseSubmittedTitle, body: fmt(tt.parent.notif.caseSubmittedBody, { ref: reference, child: a.child.firstName }) }),
+    (tt) => ({ title: tt.parent.notif.caseSubmittedTitle, body: fmt(tt.parent.notif.caseSubmittedBody, { ref: reference, child: child.firstName }) }),
     `/review/cases/${created.id}`,
   );
   revalidatePath("/parent");
-  await flash(fmt(t.assessment.submitted, { ref: reference }));
-  redirect(`/parent/cases/${created.id}`);
+  revalidatePath("/parent/cases");
+  return { ok: true, data: { caseId: created.id, reference } };
 }

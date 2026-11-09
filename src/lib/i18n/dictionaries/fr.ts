@@ -1,3 +1,4 @@
+import { quickFr } from "./quick-fr";
 import { assessFr } from "./assess-fr";
 import { parentFr } from "./parent-fr";
 import { siteFr } from "./site-fr";
@@ -7,6 +8,7 @@ export const fr: Dict = {
   ...siteFr,
   ...parentFr,
   ...assessFr,
+  ...quickFr,
   meta: {
     title: "AFAQ | آفاق",
     description: "Plateforme algérienne d'accompagnement des enfants en difficulté d'apprentissage, qui relie les parents à des spécialistes qualifiés. Un nouvel horizon pour chaque enfant.",

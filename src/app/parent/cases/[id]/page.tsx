@@ -112,7 +112,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
             title={p.details}
             action={
               c.difficultyAssessment && EDITABLE_CASE_STATUSES.includes(status) ? (
-                <Link href={`/parent/assessments/${c.difficultyAssessment.id}`} className="btn-ghost">
+                <Link href={`/parent/cases/new?assessment=${c.difficultyAssessment.id}`} className="btn-ghost">
                   {t.assessment.editAnswers}
                 </Link>
               ) : undefined

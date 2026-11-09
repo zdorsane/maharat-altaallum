@@ -7,7 +7,6 @@ import { fmt } from "@/lib/i18n/config";
 import { Badge, Disclaimer, EmptyState, PageHeader, Section, StatCard, TextLink } from "@/components/ui";
 import { STATUS_TONE, type CaseStatus } from "@/lib/constants";
 import { ageLabel, cn, formatDateTime, initials } from "@/lib/utils";
-import { startAssessmentAction } from "./assessment-actions";
 
 export default async function ParentHome() {
   const [user, { t, locale }] = await Promise.all([requireRole("PARENT"), getI18n()]);
@@ -61,7 +60,6 @@ export default async function ParentHome() {
           ) : (
             <ul className="space-y-4">
               {children.map((c) => {
-                const draft = c.difficultyAssessments.find((x) => x.status === "DRAFT");
                 const sent = c.difficultyAssessments.find((x) => x.status === "SUBMITTED");
                 const last = c.cases[0];
                 // 0 profile · 1 assessment · 2 submitted · 3 follow-up
@@ -93,23 +91,15 @@ export default async function ParentHome() {
                         </li>
                       ))}
                     </ol>
-                    {draft ? (
-                      <Link href={`/parent/assessments/${draft.id}`} className="btn-primary w-full">
-                        <ClipboardList className="size-4" />
-                        {t.assessment.continue}
-                      </Link>
-                    ) : sent?.case ? (
+                    {sent?.case ? (
                       <Link href={`/parent/cases/${sent.case.id}`} className="btn-ghost w-full">
                         {t.assessment.view}
                       </Link>
                     ) : (
-                      <form action={startAssessmentAction}>
-                        <input type="hidden" name="childId" value={c.id} />
-                        <button className="btn-primary w-full">
-                          <ClipboardList className="size-4" />
-                          {t.assessment.start}
-                        </button>
-                      </form>
+                      <Link href={`/parent/cases/new?child=${c.id}`} className="btn-primary w-full">
+                        <ClipboardList className="size-4" />
+                        {t.assessment.start}
+                      </Link>
                     )}
                   </li>
                 );

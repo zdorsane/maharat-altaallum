@@ -108,7 +108,7 @@ model Case {
   otherCategory        String?
   firstNoticed         String?
   situations           String?
-  priorSupport         String    // NONE | ASSESSMENT | SUPPORT | BOTH
+  priorSupport         String?   // NONE | ASSESSMENT | SUPPORT | BOTH (optional since the quick assessment)
   priorSupportDetails  String?
   consentAt            DateTime
   assignedReviewerId   String?

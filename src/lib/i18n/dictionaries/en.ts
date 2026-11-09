@@ -1,3 +1,4 @@
+import { quickEn } from "./quick-en";
 import { assessEn } from "./assess-en";
 import { parentEn } from "./parent-en";
 import { siteEn } from "./site-en";
@@ -7,6 +8,7 @@ export const en: Dict = {
   ...siteEn,
   ...parentEn,
   ...assessEn,
+  ...quickEn,
   meta: {
     title: "AFAQ | آفاق",
     description: "An Algerian educational support platform for children with learning difficulties, connecting parents with qualified specialists. A new horizon for every child.",
