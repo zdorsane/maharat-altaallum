@@ -16,10 +16,11 @@ export default async function NewChildPage({ searchParams }: { searchParams: Pro
   return (
     <div className="max-w-3xl">
       <BackLink href="/parent/children">{t.parent.child.back}</BackLink>
-      <PageHeader title={f.titleNew} subtitle={f.subtitle} />
+      <PageHeader title={f.titleNew} subtitle={t.childExtra.privacy} />
       <div className="card rounded-[1.5rem] p-6 sm:p-8">
         <ChildForm
           t={f}
+          extra={t.childExtra}
           levels={SCHOOL_LEVELS.map((k) => [k, t.labels.schoolLevels[k]])}
           languages={SCHOOL_LANGUAGES.map((k) => [k, t.labels.schoolLanguages[k]])}
           next={next === "case" ? "case" : undefined}

@@ -9,6 +9,8 @@ import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { Badge, EmptyState, Section } from "@/components/ui";
 import { BackLink, CaseStages, Detail } from "@/components/parent/bits";
 import { MessageForm, UploadForm } from "@/components/parent/forms";
+import { AssessmentSummary } from "@/components/assessment/summary";
+import { EDITABLE_CASE_STATUSES } from "@/lib/assessment";
 
 export async function generateMetadata() {
   const { t } = await getI18n();
@@ -26,6 +28,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
       include: {
         child: true,
         categories: true,
+        difficultyAssessment: true,
         // Parents only ever see events flagged visibleToParent; internal notes live elsewhere.
         events: { where: { visibleToParent: true }, orderBy: { createdAt: "desc" } },
         documents: { orderBy: { createdAt: "desc" }, select: { id: true, fileName: true, mimeType: true, size: true, createdAt: true } },
@@ -105,23 +108,38 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
             </div>
           </Section>
 
-          <Section title={p.details}>
-            <div className="mb-4 flex flex-wrap gap-1.5">
-              {c.categories.map((k) => (
-                <span key={k.key} className="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-semibold text-primary">
-                  {k.key === "OTHER" && c.otherCategory ? c.otherCategory : t.labels.categories[k.key as CategoryKey]}
-                </span>
-              ))}
-            </div>
-            <dl className="space-y-4 text-sm">
-              <Detail label={p.description}>{c.description}</Detail>
-              <Detail label={p.firstNoticed}>{c.firstNoticed}</Detail>
-              <Detail label={p.situations}>{c.situations}</Detail>
-              <Detail label={p.priorSupport}>
-                {t.parent.caseForm.priorSupportOptions[c.priorSupport as keyof typeof t.parent.caseForm.priorSupportOptions]}
-                {c.priorSupportDetails ? ` — ${c.priorSupportDetails}` : ""}
-              </Detail>
-            </dl>
+          <Section
+            title={p.details}
+            action={
+              c.difficultyAssessment && EDITABLE_CASE_STATUSES.includes(status) ? (
+                <Link href={`/parent/assessments/${c.difficultyAssessment.id}`} className="btn-ghost">
+                  {t.assessment.editAnswers}
+                </Link>
+              ) : undefined
+            }
+          >
+            {c.difficultyAssessment ? (
+              <AssessmentSummary a={c.difficultyAssessment} t={t} />
+            ) : (
+              <>
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {c.categories.map((k) => (
+                    <span key={k.key} className="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-semibold text-primary">
+                      {k.key === "OTHER" && c.otherCategory ? c.otherCategory : t.labels.categories[k.key as CategoryKey]}
+                    </span>
+                  ))}
+                </div>
+                <dl className="space-y-4 text-sm">
+                  <Detail label={p.description}>{c.description}</Detail>
+                  {c.firstNoticed && <Detail label={p.firstNoticed}>{c.firstNoticed}</Detail>}
+                  {c.situations && <Detail label={p.situations}>{c.situations}</Detail>}
+                  <Detail label={p.priorSupport}>
+                    {t.parent.caseForm.priorSupportOptions[c.priorSupport as keyof typeof t.parent.caseForm.priorSupportOptions]}
+                    {c.priorSupportDetails ? ` — ${c.priorSupportDetails}` : ""}
+                  </Detail>
+                </dl>
+              </>
+            )}
           </Section>
         </div>
 
@@ -202,7 +220,9 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
                   const label =
                     e.type === "STATUS" && e.toStatus
                       ? fmt(p.events.STATUS, { status: t.labels.status[e.toStatus as CaseStatus] ?? e.toStatus })
-                      : (p.events[e.type as keyof typeof p.events] ?? e.type);
+                      : e.type === "ASSESSMENT_UPDATED"
+                        ? t.assessment.eventUpdated
+                        : (p.events[e.type as keyof typeof p.events] ?? e.type);
                   return (
                     <li key={e.id} className="relative">
                       <span className="absolute -start-[1.72rem] top-1 size-3 rounded-full border-2 border-surface bg-primary" />

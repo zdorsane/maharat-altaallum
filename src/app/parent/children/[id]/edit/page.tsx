@@ -23,18 +23,22 @@ export default async function EditChildPage({ params }: { params: Promise<{ id: 
   return (
     <div className="max-w-3xl">
       <BackLink href={`/parent/children/${child.id}`}>{child.firstName}</BackLink>
-      <PageHeader title={f.titleEdit} subtitle={f.subtitle} />
+      <PageHeader title={f.titleEdit} subtitle={t.childExtra.privacy} />
       <div className="card rounded-[1.5rem] p-6 sm:p-8">
         <ChildForm
           t={f}
+          extra={t.childExtra}
           levels={SCHOOL_LEVELS.map((k) => [k, t.labels.schoolLevels[k]])}
           languages={SCHOOL_LANGUAGES.map((k) => [k, t.labels.schoolLanguages[k]])}
           child={{
             id: child.id,
             firstName: child.firstName,
+            lastName: child.lastName ?? "",
+            gender: child.gender ?? "",
             birthDate: child.birthDate.toISOString().slice(0, 10),
             schoolLevel: child.schoolLevel,
             schoolLanguage: child.schoolLanguage,
+            schoolName: child.schoolName ?? "",
             observations: child.observations ?? "",
             previousAssessments: child.previousAssessments ?? "",
           }}

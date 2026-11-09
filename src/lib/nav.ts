@@ -17,13 +17,14 @@ export function navFor(area: Area, role: Role, t: Dict): NavItem[] {
         { href: "/parent/cases", label: n.cases, icon: "cases" },
         { href: "/parent/appointments", label: n.appointments, icon: "calendar" },
         { href: "/parent/messages", label: n.messages, icon: "messages" },
+        { href: "/parent/account", label: n.account, icon: "profile" },
       ];
     }
     case "specialist": {
       const n = t.navs.specialist;
       return [
         { href: "/specialist", label: n.home, icon: "home", exact: true },
-        { href: "/specialist/children", label: n.children, icon: "children" },
+        { href: "/specialist/cases", label: n.cases, icon: "cases" },
         { href: "/specialist/appointments", label: n.appointments, icon: "calendar" },
         { href: "/specialist/programs", label: n.programs, icon: "programs" },
         { href: "/specialist/messages", label: n.messages, icon: "messages" },

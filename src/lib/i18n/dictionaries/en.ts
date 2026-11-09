@@ -1,3 +1,4 @@
+import { assessEn } from "./assess-en";
 import { parentEn } from "./parent-en";
 import { siteEn } from "./site-en";
 import type { Dict } from "./ar";
@@ -5,6 +6,7 @@ import type { Dict } from "./ar";
 export const en: Dict = {
   ...siteEn,
   ...parentEn,
+  ...assessEn,
   meta: {
     title: "AFAQ | آفاق",
     description: "An Algerian educational support platform for children with learning difficulties, connecting parents with qualified specialists. A new horizon for every child.",
@@ -161,9 +163,9 @@ export const en: Dict = {
   },
   spaces: { parent: "Parent space", review: "Review space", specialist: "Specialist space", admin: "Administration" },
   navs: {
-    parent: { home: "Home", children: "My children", cases: "Files", appointments: "Appointments", messages: "Messages" },
+    parent: { home: "Home", children: "Child profile", cases: "Files", appointments: "Appointments", messages: "Messages", account: "My account" },
     review: { dashboard: "Review board", cases: "Files", referrals: "Referrals", messages: "Messages", toAdmin: "Administration" },
-    specialist: { home: "Home", children: "Children", appointments: "Appointments", programs: "Programs", messages: "Messages", profile: "Professional profile" },
+    specialist: { home: "Home", cases: "My files", appointments: "Appointments", programs: "Programs", messages: "Messages", profile: "Professional profile" },
     admin: {
       overview: "Overview",
       users: "Users",

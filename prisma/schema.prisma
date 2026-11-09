@@ -68,9 +68,12 @@ model Child {
   id                  String   @id @default(cuid())
   parentId            String
   firstName           String
+  lastName            String?
+  gender              String?  // MALE | FEMALE (optional)
   birthDate           DateTime
   schoolLevel         String
   schoolLanguage      String
+  schoolName          String?
   observations        String?
   previousAssessments String?
   createdAt           DateTime @default(now())
@@ -84,6 +87,7 @@ model Child {
   activities     ChildActivity[]
   results        ActivityResult[]
   progress       ProgressRecord[]
+  difficultyAssessments DifficultyAssessment[]
 
   @@index([parentId])
 }
@@ -102,8 +106,8 @@ model Case {
   status               String    @default("RECEIVED")
   description          String
   otherCategory        String?
-  firstNoticed         String
-  situations           String
+  firstNoticed         String?
+  situations           String?
   priorSupport         String    // NONE | ASSESSMENT | SUPPORT | BOTH
   priorSupportDetails  String?
   consentAt            DateTime
@@ -125,6 +129,7 @@ model Case {
   assessments        Assessment[]
   referrals          Referral[]
   messages           Message[]
+  difficultyAssessment DifficultyAssessment?
 
   @@index([status])
   @@index([childId])
@@ -216,6 +221,11 @@ model Specialist {
   services        String   // newline-separated
   availability    String
   photoUrl        String?
+  photo           Bytes?
+  photoMime       String?
+  consultationModes String @default("") // comma-separated: IN_PERSON,ONLINE,DIRECT
+  contactEmail    String?
+  contactPhone    String?
   isPublic        Boolean  @default(true)
   isExternal      Boolean  @default(false)
   isDemo          Boolean  @default(false)
@@ -230,6 +240,7 @@ model Specialist {
   supportPlans   SupportPlan[]
   referrals      Referral[]
   progress       ProgressRecord[]
+  documents      SpecialistDocument[]
 
   @@index([specialization])
   @@index([wilaya])
@@ -243,6 +254,46 @@ model SpecialistQualification {
   year         Int?
 
   specialist Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+}
+
+/// CV, diplomas and certificates. Visible only to the specialist and administrators.
+model SpecialistDocument {
+  id           String   @id @default(cuid())
+  specialistId String
+  kind         String   // CV | CERTIFICATE | OTHER
+  fileName     String
+  mimeType     String
+  size         Int
+  data         Bytes
+  createdAt    DateTime @default(now())
+
+  specialist Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+
+  @@index([specialistId])
+}
+
+/// Parent-reported learning-difficulty checklist (educational observation, not a diagnosis).
+/// Saved as a DRAFT step by step; submitting it opens a Case.
+model DifficultyAssessment {
+  id                  String    @id @default(cuid())
+  childId             String
+  caseId              String?   @unique
+  status              String    @default("DRAFT") // DRAFT | SUBMITTED
+  items               String    @default("") // comma-separated difficulty keys (see src/lib/assessment.ts)
+  clearSections       String    @default("") // sections marked "nothing observed"
+  summary             String?
+  priorSupport        String?   // NONE | ASSESSMENT | SUPPORT | BOTH
+  priorSupportDetails String?
+  consultationMode    String?   // IN_PERSON | ONLINE | DIRECT
+  consultationNote    String?
+  submittedAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+  case  Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+
+  @@index([childId, status])
 }
 
 // ───────────────────────────── Assessment & support ─────────────────────────────

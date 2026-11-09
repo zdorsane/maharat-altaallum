@@ -6,11 +6,12 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { audit, flash, rateLimit } from "@/lib/server-utils";
 import { fieldErrors, type ActionState } from "@/lib/action";
-import { CATEGORY_KEYS, PRIOR_SUPPORT, SCHOOL_LANGUAGES, SCHOOL_LEVELS } from "@/lib/constants";
+import { SCHOOL_LANGUAGES, SCHOOL_LEVELS } from "@/lib/constants";
+import { GENDERS } from "@/lib/assessment";
 import { fmt } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
 import { formatDateTime } from "@/lib/utils";
-import { caseStaffRecipients, getOwnedCase, getOwnedChild, newCaseReference, notifyUsers, readUploads, requireParent, storeDocuments } from "@/lib/parent";
+import { caseStaffRecipients, getOwnedCase, getOwnedChild, notifyUsers, readUploads, requireParent, storeDocuments } from "@/lib/parent";
 
 // ── Children ────────────────────────────────────────────────
 
@@ -22,6 +23,9 @@ async function childSchema() {
   const maxBirth = new Date(now.getFullYear() - 3, now.getMonth(), now.getDate());
   return z.object({
     firstName: z.string().trim().min(2, e.firstName).max(40, e.tooLong),
+    lastName: z.string().trim().max(60, e.tooLong).optional().default(""),
+    gender: z.enum(["", ...GENDERS]).optional().default(""),
+    schoolName: z.string().trim().max(120, e.tooLong).optional().default(""),
     birthDate: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, e.birthDate)
@@ -34,7 +38,7 @@ async function childSchema() {
   });
 }
 
-const keepChild = (fd: FormData) => Object.fromEntries(["firstName", "birthDate", "schoolLevel", "schoolLanguage", "observations", "previousAssessments"].map((k) => [k, String(fd.get(k) ?? "")]));
+const keepChild = (fd: FormData) => Object.fromEntries(["firstName", "lastName", "gender", "birthDate", "schoolLevel", "schoolLanguage", "schoolName", "observations", "previousAssessments"].map((k) => [k, String(fd.get(k) ?? "")]));
 
 export async function createChildAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const user = await requireParent();
@@ -47,9 +51,12 @@ export async function createChildAction(_: ActionState, formData: FormData): Pro
     data: {
       parentId: user.parentProfileId,
       firstName: d.firstName,
+      lastName: d.lastName || null,
+      gender: d.gender || null,
       birthDate: d.birthDate,
       schoolLevel: d.schoolLevel,
       schoolLanguage: d.schoolLanguage,
+      schoolName: d.schoolName || null,
       observations: d.observations || null,
       previousAssessments: d.previousAssessments || null,
     },
@@ -71,9 +78,12 @@ export async function updateChildAction(_: ActionState, formData: FormData): Pro
     where: { id: child.id },
     data: {
       firstName: d.firstName,
+      lastName: d.lastName || null,
+      gender: d.gender || null,
       birthDate: d.birthDate,
       schoolLevel: d.schoolLevel,
       schoolLanguage: d.schoolLanguage,
+      schoolName: d.schoolName || null,
       observations: d.observations || null,
       previousAssessments: d.previousAssessments || null,
     },
@@ -98,67 +108,6 @@ export async function deleteChildAction(formData: FormData) {
 }
 
 // ── Cases ───────────────────────────────────────────────────
-
-export async function submitCaseAction(_: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireParent();
-  const { t } = await getI18n();
-  const e = t.parent.caseForm.errors;
-  const keep = {
-    ...Object.fromEntries(["childId", "otherCategory", "description", "firstNoticed", "situations", "priorSupport", "priorSupportDetails"].map((k) => [k, String(formData.get(k) ?? "")])),
-    categories: formData.getAll("categories").map(String),
-  };
-
-  const parsed = z
-    .object({
-      childId: z.string().min(1, e.child),
-      categories: z.array(z.enum(CATEGORY_KEYS)).min(1, e.areas),
-      otherCategory: z.string().trim().max(120),
-      description: z.string().trim().min(30, e.description).max(4000),
-      firstNoticed: z.string().trim().min(2, e.firstNoticed).max(300),
-      situations: z.string().trim().min(2, e.situations).max(1500),
-      priorSupport: z.enum(PRIOR_SUPPORT, { message: e.priorSupport }),
-      priorSupportDetails: z.string().trim().max(1500),
-    })
-    .refine((d) => !d.categories.includes("OTHER") || d.otherCategory.length >= 2, { path: ["otherCategory"], message: e.otherArea })
-    .safeParse(keep);
-
-  const errors = parsed.success ? {} : fieldErrors(parsed.error.issues);
-  if (formData.get("consent") !== "on") errors.consent = e.consent;
-  const uploads = await readUploads(formData);
-  if ("error" in uploads) errors.documents = e[uploads.error];
-  if (!parsed.success || Object.keys(errors).length) return { ok: false, errors, data: keep };
-
-  if (!rateLimit(`case:${user.id}`, 5, 60 * 60 * 1000)) return { ok: false, message: e.tooManyRequests, data: keep };
-
-  const d = parsed.data;
-  const child = await getOwnedChild(user.parentProfileId, d.childId);
-  const reference = await newCaseReference();
-  const created = await db.case.create({
-    data: {
-      reference,
-      childId: child.id,
-      description: d.description,
-      otherCategory: d.categories.includes("OTHER") ? d.otherCategory : null,
-      firstNoticed: d.firstNoticed,
-      situations: d.situations,
-      priorSupport: d.priorSupport,
-      priorSupportDetails: d.priorSupportDetails || null,
-      consentAt: new Date(),
-      categories: { connect: d.categories.map((key) => ({ key })) },
-      events: { create: { type: "SUBMITTED", actorId: user.id, toStatus: "RECEIVED" } },
-    },
-  });
-  if ("files" in uploads && uploads.files.length) await storeDocuments(created.id, user.id, uploads.files);
-
-  await audit(user.id, "CASE_SUBMIT", "Case", created.id, { reference });
-  await notifyUsers(
-    await caseStaffRecipients(null),
-    (tt) => ({ title: tt.parent.notif.caseSubmittedTitle, body: fmt(tt.parent.notif.caseSubmittedBody, { ref: reference, child: child.firstName }) }),
-    `/review/cases/${created.id}`,
-  );
-  await flash(fmt(t.parent.caseForm.submitted, { ref: reference }));
-  redirect(`/parent/cases/${created.id}`);
-}
 
 export async function uploadCaseDocumentsAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const user = await requireParent();

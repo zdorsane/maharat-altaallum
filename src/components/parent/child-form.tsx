@@ -6,10 +6,22 @@ import { createChildAction, updateChildAction } from "@/app/parent/actions";
 import { Field, FormMessage, Select, SubmitButton, TextArea } from "@/components/form";
 import type { Dict } from "@/lib/i18n/dictionaries/ar";
 
-type ChildValues = { id: string; firstName: string; birthDate: string; schoolLevel: string; schoolLanguage: string; observations: string; previousAssessments: string };
+type ChildValues = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  schoolLevel: string;
+  schoolLanguage: string;
+  schoolName: string;
+  observations: string;
+  previousAssessments: string;
+};
 
 export function ChildForm({
   t,
+  extra,
   levels,
   languages,
   child,
@@ -17,6 +29,7 @@ export function ChildForm({
   cancelHref,
 }: {
   t: Dict["parent"]["childForm"];
+  extra: Dict["childExtra"];
   levels: [string, string][];
   languages: [string, string][];
   child?: ChildValues;
@@ -36,12 +49,17 @@ export function ChildForm({
       <FormMessage state={state} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field name="firstName" label={t.firstName} autoComplete="off" required state={state} defaultValue={v("firstName")} />
+        <Field name="lastName" label={extra.lastName} autoComplete="off" state={state} defaultValue={v("lastName")} />
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2">
         <Field name="birthDate" label={t.birthDate} type="date" min={min} max={max} required state={state} defaultValue={v("birthDate")} />
+        <Select key={`s-${v("gender")}`} name="gender" label={extra.gender} state={state} options={[["", extra.genderPlaceholder], ...(Object.entries(extra.genders) as [string, string][])]} defaultValue={v("gender")} />
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <Select key={`l-${v("schoolLevel")}`} name="schoolLevel" label={t.schoolLevel} state={state} options={levels} placeholder={t.schoolLevelPlaceholder} defaultValue={v("schoolLevel")} required />
         <Select key={`g-${v("schoolLanguage")}`} name="schoolLanguage" label={t.schoolLanguage} state={state} options={languages} placeholder={t.schoolLanguagePlaceholder} defaultValue={v("schoolLanguage")} required />
       </div>
+      <Field name="schoolName" label={extra.schoolName} autoComplete="off" state={state} defaultValue={v("schoolName")} />
       <TextArea name="observations" label={t.observations} hint={t.observationsHint} rows={3} state={state} defaultValue={v("observations")} />
       <TextArea name="previousAssessments" label={t.previousAssessments} hint={t.previousAssessmentsHint} rows={3} state={state} defaultValue={v("previousAssessments")} />
       <div className="flex flex-wrap gap-3 pt-2">

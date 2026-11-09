@@ -1,8 +1,10 @@
+import { assessAr } from "./assess-ar";
 import { parentAr } from "./parent-ar";
 import { siteAr } from "./site-ar";
 export const ar = {
   ...siteAr,
   ...parentAr,
+  ...assessAr,
   meta: {
     title: "آفاق | AFAQ",
     description: "منصة جزائرية لمرافقة الأطفال الذين يواجهون صعوبات في التعلّم، تربط الأولياء بمختصين تربويين مؤهلين. نفتح آفاق التعلم لكل طفل.",
@@ -158,9 +160,9 @@ export const ar = {
   },
   spaces: { parent: "فضاء الولي", review: "فضاء المراجعة", specialist: "فضاء المختص", admin: "لوحة الإدارة" },
   navs: {
-    parent: { home: "الرئيسية", children: "أطفالي", cases: "الملفات", appointments: "المواعيد", messages: "الرسائل" },
+    parent: { home: "الرئيسية", children: "ملف طفلي", cases: "الملفات", appointments: "المواعيد", messages: "الرسائل", account: "حسابي" },
     review: { dashboard: "لوحة المراجعة", cases: "الملفات", referrals: "التوجيهات", messages: "الرسائل", toAdmin: "لوحة الإدارة" },
-    specialist: { home: "الرئيسية", children: "الأطفال", appointments: "المواعيد", programs: "البرامج", messages: "الرسائل", profile: "ملفي المهني" },
+    specialist: { home: "الرئيسية", cases: "ملفاتي", appointments: "المواعيد", programs: "البرامج", messages: "الرسائل", profile: "ملفي المهني" },
     admin: {
       overview: "نظرة عامة",
       users: "المستخدمون",

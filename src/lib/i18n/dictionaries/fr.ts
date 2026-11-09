@@ -1,3 +1,4 @@
+import { assessFr } from "./assess-fr";
 import { parentFr } from "./parent-fr";
 import { siteFr } from "./site-fr";
 import type { Dict } from "./ar";
@@ -5,6 +6,7 @@ import type { Dict } from "./ar";
 export const fr: Dict = {
   ...siteFr,
   ...parentFr,
+  ...assessFr,
   meta: {
     title: "AFAQ | آفاق",
     description: "Plateforme algérienne d'accompagnement des enfants en difficulté d'apprentissage, qui relie les parents à des spécialistes qualifiés. Un nouvel horizon pour chaque enfant.",
@@ -161,9 +163,9 @@ export const fr: Dict = {
   },
   spaces: { parent: "Espace parent", review: "Espace d'examen", specialist: "Espace spécialiste", admin: "Administration" },
   navs: {
-    parent: { home: "Accueil", children: "Mes enfants", cases: "Dossiers", appointments: "Rendez-vous", messages: "Messages" },
+    parent: { home: "Accueil", children: "Profil de l'enfant", cases: "Dossiers", appointments: "Rendez-vous", messages: "Messages", account: "Mon compte" },
     review: { dashboard: "Tableau d'examen", cases: "Dossiers", referrals: "Orientations", messages: "Messages", toAdmin: "Administration" },
-    specialist: { home: "Accueil", children: "Enfants", appointments: "Rendez-vous", programs: "Programmes", messages: "Messages", profile: "Profil professionnel" },
+    specialist: { home: "Accueil", cases: "Mes dossiers", appointments: "Rendez-vous", programs: "Programmes", messages: "Messages", profile: "Profil professionnel" },
     admin: {
       overview: "Vue d'ensemble",
       users: "Utilisateurs",
